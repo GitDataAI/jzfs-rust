@@ -22,3 +22,7 @@ sea-orm = { workspace = true,features = [
 
 anyhow = { workspace = true }
 lombok = { workspace = true }
+
+
+[dependencies.jiaozifs-utlis]
+path = "../jiaozifs-utlis"
