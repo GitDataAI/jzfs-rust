@@ -9,7 +9,7 @@ use uuid::Uuid;
 pub use Model as AkSk;
 
 
-#[derive(Serialize,Deserialize,Debug,Clone,Eq, PartialEq,DeriveEntityModel)]
+#[derive(Serialize,Deserialize,Debug,Clone,Eq, PartialEq,DeriveEntityModel,Data,Builder)]
 #[sea_orm(table_name = "aksk")]
 pub struct Model{
     #[sea_orm(primary_key)]
