@@ -1,25 +1,23 @@
 use std::io::{self, Read, Write};
-use std::str::FromStr;
 use sha2::{Sha256, Digest};
 use md5::Md5;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
-use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, IntoPrimitive, TryFromPrimitive)]
 #[repr(u8)]
-enum HashType {
+pub enum HashType {
     Md5 = 0,
     SHA256 = 1,
 }
 
 
 pub struct Hasher {
-    md5: Option<Md5>,
-    sha256: Option<Sha256>,
+    pub md5: Option<Md5>,
+    pub sha256: Option<Sha256>,
 }
 
 impl Hasher {
-    fn new(hash_types: &[HashType]) -> Self {
+    pub fn new(hash_types: &[HashType]) -> Self {
         let mut hasher = Hasher {
             md5: None,
             sha256: None,
@@ -41,7 +39,7 @@ impl Hasher {
         hasher
     }
 
-    fn write(&mut self, data: &[u8]) -> io::Result<usize> {
+    pub fn write(&mut self, data: &[u8]) -> io::Result<usize> {
         if let Some(ref mut md5) = self.md5 {
             md5.write_all(data)?;
         }
@@ -51,51 +49,51 @@ impl Hasher {
         Ok(data.len())
     }
 
-    fn write_int8(&mut self, data: i8) -> io::Result<usize> {
+    pub fn write_int8(&mut self, data: i8) -> io::Result<usize> {
         self.write(&[data as u8])
     }
 
-    fn write_uint8(&mut self, data: u8) -> io::Result<usize> {
+    pub fn write_uint8(&mut self, data: u8) -> io::Result<usize> {
         self.write(&[data])
     }
 
-    fn write_string(&mut self, data: &str) -> io::Result<usize> {
+    pub fn write_string(&mut self, data: &str) -> io::Result<usize> {
         self.write(data.as_bytes())
     }
 
-    fn write_int32(&mut self, data: i32) -> io::Result<usize> {
+    pub fn write_int32(&mut self, data: i32) -> io::Result<usize> {
         let mut buf = [0u8; 4];
         buf.copy_from_slice(&data.to_be_bytes());
         self.write(&buf)
     }
 
-    fn write_uint32(&mut self, data: u32) -> io::Result<usize> {
+    pub fn write_uint32(&mut self, data: u32) -> io::Result<usize> {
         let mut buf = [0u8; 4];
         buf.copy_from_slice(&data.to_be_bytes());
         self.write(&buf)
     }
 
-    fn write_int64(&mut self, data: i64) -> io::Result<usize> {
+    pub fn write_int64(&mut self, data: i64) -> io::Result<usize> {
         let mut buf = [0u8; 8];
         buf.copy_from_slice(&data.to_be_bytes());
         self.write(&buf)
     }
 
-    fn write_uint64(&mut self, data: u64) -> io::Result<usize> {
+    pub fn write_uint64(&mut self, data: u64) -> io::Result<usize> {
         let mut buf = [0u8; 8];
         buf.copy_from_slice(&data.to_be_bytes());
         self.write(&buf)
     }
 }
 
-struct HashingReader<R: Read> {
+pub struct HashingReader<R: Read> {
     hasher: Hasher,
     original_reader: R,
     copied_size: u64,
 }
 
 impl<R: Read> HashingReader<R> {
-    fn new(reader: R, hash_types: &[HashType]) -> Self {
+    pub fn new(reader: R, hash_types: &[HashType]) -> Self {
         HashingReader {
             hasher: Hasher::new(hash_types),
             original_reader: reader,

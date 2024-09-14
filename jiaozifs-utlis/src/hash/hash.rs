@@ -1,10 +1,10 @@
-use std::str::FromStr;
 use serde::{Serialize, Deserialize, de::{self, Visitor}};
 use serde::ser::Serializer;
 use serde::de::Deserializer;
 use hex::{FromHex, ToHex};
+use sea_orm::DeriveValueType;
 
-#[derive(Debug, PartialEq, Eq, Clone, Default)]
+#[derive(Debug, PartialEq, Eq, Clone,Hash,Default, DeriveValueType)]
 pub struct Hash(Vec<u8>);
 
 impl Hash {
