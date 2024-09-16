@@ -13,12 +13,16 @@ uuid = { workspace = true,features = ["serde","v4"] }
 
 time = { workspace = true }
 tokio = { workspace = true,features = ["full"] }
-sea-orm = { workspace = true,features = [
-    "macros",
-    "runtime-tokio",
-    "postgres-array",
+
+sqlx = { workspace = true ,features = [
+    "default",
+    "derive",
+    "postgres",
     "sqlx-postgres",
-] }
+    "uuid",
+    "time",
+    "runtime-tokio"
+]}
 
 anyhow = { workspace = true }
 lombok = { workspace = true }

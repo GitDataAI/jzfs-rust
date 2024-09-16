@@ -1,11 +1,34 @@
-use serde::{Serialize, Deserialize, de::{self, Visitor}};
-use serde::ser::Serializer;
-use serde::de::Deserializer;
 use hex::{FromHex, ToHex};
-use sea_orm::DeriveValueType;
 
-#[derive(Debug, PartialEq, Eq, Clone,Hash,Default, DeriveValueType)]
-pub struct Hash(Vec<u8>);
+use serde::de::Deserializer;
+use serde::ser::Serializer;
+use serde::{de::{self, Visitor}, Deserialize, Serialize};
+use sqlx::{Database, Decode, Encode, Postgres, Type};
+use sqlx::encode::IsNull;
+use sqlx::error::BoxDynError;
+use sqlx::postgres::PgTypeInfo;
+
+#[derive(Debug, PartialEq, Eq, Clone,Hash,Default)]
+pub struct Hash(pub Vec<u8>);
+
+impl <'q>Encode<'_, Postgres> for Hash {
+    fn encode_by_ref(&self, buf: &mut <Postgres as Database>::ArgumentBuffer<'q>) -> Result<IsNull, BoxDynError> {
+        buf.extend_from_slice(&self.0);
+        Ok(IsNull::No)
+    }
+}
+impl <'r>Decode<'r, Postgres> for Hash {
+    fn decode(value: <Postgres as Database>::ValueRef<'r>) -> Result<Self, BoxDynError> {
+        
+        value.as_bytes().map(|bytes| Self(bytes.to_vec()))
+        .map_err(|e| e.into())
+    }
+}
+impl Type<Postgres> for Hash {
+    fn type_info() -> <Postgres as Database>::TypeInfo {
+        PgTypeInfo::with_name("BYTEA")
+    }
+}
 
 impl Hash {
     pub fn from_hex(hex_str: &str) -> Result<Self, hex::FromHexError> {
@@ -70,7 +93,18 @@ pub fn hashes_of_hex_array(hashes_str: &[&str]) -> Result<Vec<Hash>, hex::FromHe
 pub fn hex_array_of_hashes(hashes: &[Hash]) -> Vec<String> {
     hashes.iter().map(|h| h.to_hex()).collect()
 }
-
+impl From<Vec<u8>> for Hash{
+    fn from(value: Vec<u8>) -> Self {
+        Self{
+            0: value,
+        }
+    }
+}
+impl From<Hash> for Vec<u8> {
+    fn from(value: Hash) -> Self {
+        value.0
+    }
+}
 #[cfg(test)]
 mod hash_test{
     use super::*;

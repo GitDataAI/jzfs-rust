@@ -6,8 +6,16 @@ edition = "2021"
 [dependencies]
 
 serde = { workspace = true, features = ["derive"]}
+serde_json = { workspace = true }
 hex = { workspace = true }
 sha2 = { workspace = true,features = ["default"]}
 num_enum = { workspace = true, features = ["default"]}
 md-5 = { workspace = true }
-sea-orm = { workspace = true ,features = ["sqlx-postgres"]}
+time = { workspace = true, features = ["local-offset","serde"]}
+sqlx = {workspace = true,features = [
+    "default",
+    "derive",
+    "time",
+    "postgres",
+    "sqlx-postgres"
+]}
