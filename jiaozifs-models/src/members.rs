@@ -147,9 +147,10 @@ mod members_test{
     }
     async fn init_db() -> anyhow::Result<()>{
         DB.get_or_init(||async {
-            let url = var("POSTGRES").unwrap_or("postgres://postgres:1313113a@45.66.150.179:5432/postgres".to_string());
+            let url = var("POSTGRES").unwrap();
             let pool = sqlx::postgres::PgPoolOptions::new()
-                .max_connections(5)
+
+                .max_connections(50)
                 .connect(&url)
                 .await.unwrap();
             pool

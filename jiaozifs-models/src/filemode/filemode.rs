@@ -3,8 +3,10 @@ use std::str::FromStr;
 use std::num::ParseIntError;
 use std::io;
 use std::fs;
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq,Serialize,Deserialize)]
 pub enum FileMode {
     Empty = 0,
     Dir = 0o0040000,

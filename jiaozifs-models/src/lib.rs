@@ -17,8 +17,12 @@ pub mod tags;
 
 pub mod trees;
 mod filemode;
-// pub mod users;
-// pub mod wips;
+pub mod users;
+pub mod wips;
+
+
+
+
 pub type MatchMode = i64;
 
 pub const ExactMatch:MatchMode = 0;
