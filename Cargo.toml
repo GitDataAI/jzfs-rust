@@ -1,0 +1,27 @@
+[workspace]
+members = [
+    "jiaozifs",
+    "jiaozifs-models",
+    "jiaozifs-utlis",
+]
+resolver = "2"
+
+
+[workspace.dependencies]
+
+serde = "1"
+serde_json = "1"
+serde_yaml = "0.9"
+uuid = "1"
+time = "0.3.36"
+sqlx = "0.8.2"
+sqlx-postgres = "0.8.2"
+anyhow = "1"
+tokio = "1"
+lombok = "0.4.0"
+hex = "0.4.3"
+md-5 = "0.10.6"
+sha2 = "0.10.8"
+num_enum = "0.7.3"
+
+faccess = "0.2.4"

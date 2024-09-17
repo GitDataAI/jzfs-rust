@@ -1,0 +1,32 @@
+[package]
+name = "jiaozifs-models"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+serde = { workspace = true,features = ["derive"] }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+
+uuid = { workspace = true,features = ["serde","v4"] }
+
+time = { workspace = true }
+tokio = { workspace = true,features = ["full"] }
+
+sqlx = { workspace = true ,features = [
+    "default",
+    "derive",
+    "postgres",
+    "sqlx-postgres",
+    "uuid",
+    "time",
+    "runtime-tokio"
+]}
+
+anyhow = { workspace = true }
+lombok = { workspace = true }
+sha256 = { version = "1.5.0" }
+
+[dependencies.jiaozifs-utlis]
+path = "../jiaozifs-utlis"
