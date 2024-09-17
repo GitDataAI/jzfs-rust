@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use sqlx::{query, FromRow};
 use time::{OffsetDateTime, PrimitiveDateTime};
 use uuid::Uuid;

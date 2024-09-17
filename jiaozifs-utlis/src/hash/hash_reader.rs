@@ -2,6 +2,7 @@ use std::io::{self, Read, Write};
 use sha2::{Sha256, Digest};
 use md5::Md5;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
+use crate::Hash;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, IntoPrimitive, TryFromPrimitive)]
 #[repr(u8)]
@@ -10,7 +11,7 @@ pub enum HashType {
     SHA256 = 1,
 }
 
-
+#[derive(Clone)]
 pub struct Hasher {
     pub md5: Option<Md5>,
     pub sha256: Option<Sha256>,
@@ -38,7 +39,9 @@ impl Hasher {
         }
         hasher
     }
-
+    pub fn to_md5_hash(&self) -> io::Result<Hash> {
+        Ok(Hash(self.clone().md5.unwrap().decompose().1.get_data().to_vec()))
+    }
     pub fn write(&mut self, data: &[u8]) -> io::Result<usize> {
         if let Some(ref mut md5) = self.md5 {
             md5.write_all(data)?;
@@ -84,6 +87,7 @@ impl Hasher {
         buf.copy_from_slice(&data.to_be_bytes());
         self.write(&buf)
     }
+
 }
 
 pub struct HashingReader<R: Read> {

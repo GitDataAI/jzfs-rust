@@ -1,4 +1,5 @@
 use std::fmt;
+use std::fmt::Display;
 use std::str::FromStr;
 use std::num::ParseIntError;
 use std::io;
@@ -15,6 +16,21 @@ pub enum FileMode {
     Executable = 0o0100755,
     Symlink = 0o0120000,
     Submodule = 0o0160000,
+}
+
+impl Display for FileMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            FileMode::Empty => "0000000".to_string(),
+            FileMode::Dir => "0040000".to_string(),
+            FileMode::Regular => "0100644".to_string(),
+            FileMode::Deprecated => "0100664".to_string(),
+            FileMode::Executable => "0100755".to_string(),
+            FileMode::Symlink => "0120000".to_string(),
+            FileMode::Submodule => "0160000".to_string(),
+        };
+        write!(f, "{}", str)
+    }
 }
 
 impl FileMode {
@@ -48,22 +64,6 @@ impl FileMode {
         perm
     }
 }
-
-impl fmt::Display for FileMode {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mode = match *self {
-            FileMode::Empty => "0000000",
-            FileMode::Dir => "0040000",
-            FileMode::Regular => "0100644",
-            FileMode::Deprecated => "0100664",
-            FileMode::Executable => "0100755",
-            FileMode::Symlink => "0120000",
-            FileMode::Submodule => "0160000",
-        };
-        write!(f, "{}", mode)
-    }
-}
-
 impl FromStr for FileMode {
     type Err = anyhow::Error;
 

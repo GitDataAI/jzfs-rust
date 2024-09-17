@@ -49,6 +49,9 @@ impl Hash {
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
+    pub fn to_vec(&self) -> Vec<u8> {
+        self.0.clone()
+    }
 }
 
 impl Serialize for Hash {
