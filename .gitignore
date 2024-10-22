@@ -23,5 +23,5 @@ Cargo.lock
 # Added by cargo
 .idea
 .vscode
-
+jzfs-rs.iml
 /target
