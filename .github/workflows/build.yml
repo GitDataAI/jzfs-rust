@@ -17,4 +17,3 @@ jobs:
         with:
           use-cross: false
           command: build
-          args: --bin jzfs-main
