@@ -1,0 +1,27 @@
+[package]
+name = "jzfs"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+
+
+[[bin]]
+path = "bin/main.rs"
+name = "jzfs-main"
+
+
+
+[dependencies]
+
+tokio = { version = "1.40.0",features = ["full"] }
+serde = {version = "1.0.210",features = ["derive"]}
+serde_json = "1.0.130"
+serde_yaml = "0.9.33"
+sha256 = {version = "1.5.0",features = ["tokio"]}
+
+sea-orm = {version = "1.1.0",features = ["default","sqlx-all","runtime-tokio","macros"]}
+
+time = {version = "0.3.36",features = ["default","macros","local-offset","serde"]}
+
+actix-web = {version = "4.9.0",features = ["default","macros","http2"]}

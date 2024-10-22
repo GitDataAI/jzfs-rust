@@ -1,0 +1,20 @@
+name: Build Test
+on:
+  push:
+    branches:
+      - main
+      - deploy/*
+  pull_request:
+
+jobs:
+  validator:
+    name: Run Build Test
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --bin jzfs-main
