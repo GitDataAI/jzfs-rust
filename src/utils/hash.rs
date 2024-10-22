@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use sea_orm::{DeriveValueType, FromJsonQueryResult};
 use serde::{Deserialize, Serialize};
 use std::io;
@@ -103,3 +104,8 @@ impl HasherBuilder {
     }
 }
 
+impl Display for Hasher {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.hex())
+    }
+}

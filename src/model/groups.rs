@@ -10,7 +10,7 @@ pub struct Model {
     #[sea_orm(unique)]
     pub name: String,
     #[sea_orm(column_type = "JsonBinary")]
-    pub policies: Json,
+    pub policies: Vec<Uuid>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }

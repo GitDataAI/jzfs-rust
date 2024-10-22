@@ -17,3 +17,5 @@ pub mod trees;
 pub mod usergroup;
 pub mod users;
 pub mod wips;
+mod filemode;
+mod migrations;

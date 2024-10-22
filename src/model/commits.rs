@@ -2,6 +2,8 @@
 
 use crate::utils::hash::{HashVec, Hasher};
 use sea_orm::entity::prelude::*;
+use sea_orm::FromJsonQueryResult;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "commits")]
@@ -15,9 +17,9 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub repository_id: Uuid,
     #[sea_orm(column_type = "JsonBinary")]
-    pub author: Json,
+    pub author: Signature,
     #[sea_orm(column_type = "JsonBinary")]
-    pub committer: Json,
+    pub committer: Signature,
     pub merge_tag: Option<String>,
     pub message: Option<String>,
     #[sea_orm(column_type = "VarBinary(StringLen::None)")]
@@ -26,6 +28,14 @@ pub struct Model {
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }
+
+#[derive(Clone,Debug,PartialEq,Eq,Serialize,Deserialize,FromJsonQueryResult)]
+pub struct Signature{
+    pub name: String,
+    pub email: String,
+    pub when: DateTime,
+}
+
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}

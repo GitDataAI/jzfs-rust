@@ -2,8 +2,12 @@
 
 use sea_orm::entity::prelude::*;
 use sea_orm::FromJsonQueryResult;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
+use serde::ser::SerializeStruct;
+use crate::model::filemode::FileMode;
 use crate::utils::hash::Hasher;
+
+
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "trees")]
@@ -21,11 +25,16 @@ pub struct Model {
     pub r#type: i16,
     pub size: i64,
     #[sea_orm(column_type = "JsonBinary")]
-    pub properties: Json,
+    pub properties: Property,
     #[sea_orm(column_type = "JsonBinary")]
     pub sub_objects: Vec<TreeEntry>,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
+}
+
+#[derive(Clone,Debug,PartialEq,Eq,Serialize,Deserialize,FromJsonQueryResult)]
+pub struct Property{
+    mode: FileMode
 }
 
 #[derive(Clone,Debug,PartialEq,Eq,Serialize,Deserialize,FromJsonQueryResult)]
@@ -39,3 +48,22 @@ pub struct TreeEntry{
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Serialize for Model {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer
+    {
+        let mut s = serializer
+            .serialize_struct("Trees", 3 + self.sub_objects.len())?;
+        s.serialize_field("hash", &Hasher(self.hash.clone()).hex())?;
+        s.serialize_field("repository_id", &self.repository_id)?;
+        s.serialize_field("check_sum", &self.check_sum)?;
+        s.serialize_field("type", &self.r#type)?;
+        s.serialize_field("properties", &self.properties)?;
+        s.serialize_field("sub_objects", &self.sub_objects)?;
+        s.serialize_field("created_at", &self.created_at)?;
+        s.serialize_field("updated_at", &self.updated_at)?;
+        s.end()
+    }
+}
