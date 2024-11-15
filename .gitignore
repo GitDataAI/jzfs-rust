@@ -25,3 +25,4 @@ Cargo.lock
 .vscode
 jzfs-rs.iml
 /target
+/entity
