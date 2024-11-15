@@ -1,22 +1,25 @@
 use std::io;
 use std::io::{Read, Write};
 use std::path::PathBuf;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Debug,Clone)]
+#[derive(Serialize,Deserialize,Debug,Clone,PartialEq,Eq)]
 pub struct NodeTree{
     pub local: PathBuf,
     pub file_name: String,
+    pub is_dir: bool,
     pub children: Vec<Box<NodeTree>>,
     pub hash: String,
 }
 
 impl NodeTree {
-    pub fn create(local: PathBuf, name:String, hash: String,) -> NodeTree {
+    pub fn create(local: PathBuf, name:String, hash: String,is_dir: bool) -> NodeTree {
         Self{
             local,
             file_name: name,
             children: vec![],
             hash,
+            is_dir,
         }
     }
     pub fn save(&mut self, data: Vec<u8>) -> io::Result<()> {
