@@ -1,10 +1,23 @@
-use sqlx::types::Json;
+use sea_orm::prelude::Json;
+use sea_orm::*;
+use serde::{Deserialize, Serialize};
+use sqlx::{Decode, Encode};
 use uuid::Uuid;
-use filetree::tree::FileTree;
 
+#[derive(Encode,Decode,Serialize,Deserialize,Debug,Clone,PartialEq,Eq,DeriveEntityModel)]
+#[sea_orm(table_name = "filetree")]
 pub struct Model{
+    #[sea_orm(primary_key)]
     pub uid: Uuid,
     pub repo_id: Uuid,
-    pub name: String,
-    pub filetree: Json<FileTree>
+    pub branch_id: Uuid,
+    /// must use filetree::FileTree
+    pub file_tree: String
 }
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {
+}
+
+
+impl ActiveModelBehavior for ActiveModel {}

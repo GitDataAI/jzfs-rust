@@ -11,11 +11,22 @@ pub struct Http{
 
 #[derive(Deserialize,Serialize,Clone,Debug)]
 pub struct Database{
-    pub auth: Auth
+    pub auth: Auth,
+    pub repo: Repo
 }
 
 #[derive(Deserialize,Serialize,Clone,Debug)]
 pub struct Auth{
+    pub hostname: String,
+    pub port: u16,
+    pub username: String,
+    pub password: String,
+    pub database: String,
+    pub pool: i32
+}
+
+#[derive(Deserialize,Serialize,Clone,Debug)]
+pub struct Repo{
     pub hostname: String,
     pub port: u16,
     pub username: String,
@@ -52,6 +63,14 @@ impl Default for Config {
                     password: "123456".to_string(),
                     database: "auth".to_string(),
                     pool: 4,
+                },
+                repo: Repo{
+                    hostname: "localhost".to_string(),
+                    port: 5432,
+                    username: "postgres".to_string(),
+                    password: "123456".to_string(),
+                    database: "repo".to_string(),
+                    pool: 4,
                 }
             },
             redis: Redis {
@@ -74,6 +93,14 @@ impl Config {
         self.database.auth.hostname,
         self.database.auth.port,
         self.database.auth.database)
+    }
+    pub fn get_repo_database(&self) -> String{
+        format!("postgres://{}:{}@{}:{}/{}",
+                self.database.repo.username,
+                self.database.repo.password,
+                self.database.repo.hostname,
+                self.database.repo.port,
+                self.database.repo.database)
     }
     pub fn get_http(&self) -> String{
         format!("{}:{}", self.http.host, self.http.port)

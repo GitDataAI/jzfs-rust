@@ -12,6 +12,14 @@ password = "123456"
 database = "auth"
 pool = 4
 
+[database.repo]
+hostname = "localhost"
+port = 5432
+username = "postgres"
+password = "123456"
+database = "repo"
+pool = 4
+
 
 [redis]
 host = "localhost"

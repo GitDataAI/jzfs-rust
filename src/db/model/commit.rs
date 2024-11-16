@@ -1,12 +1,23 @@
+use sea_orm::*;
 use serde::{Deserialize, Serialize};
-use sqlx::{Decode, Encode};
+use uuid::Uuid;
 
-#[derive(Encode,Decode,Serialize,Deserialize,Debug,Clone)]
-pub struct CommitModule{
-    pub uid: String,
+#[derive(Serialize,Deserialize,Debug,Clone,PartialEq,Eq,DeriveEntityModel)]
+#[sea_orm(table_name = "commit")]
+pub struct Model{
+    #[sea_orm(primary_key)]
+    pub uid: Uuid,
     pub hash: String,
     pub author: String,
-    pub message: String,
-    pub repo_id: String,
-    pub branch_id: String,
+    pub message: Uuid,
+    pub repo_id: Uuid,
+    pub branch_id: Uuid,
+    pub file_tree: String
 }
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {
+}
+
+
+impl ActiveModelBehavior for ActiveModel {}

@@ -1,6 +1,8 @@
 use crate::node::NodeTree;
 use std::path::PathBuf;
+use serde_derive::{Deserialize, Serialize};
 
+#[derive(Serialize,Deserialize,Debug,Clone,PartialEq,Eq)]
 pub struct FileTree{
     pub root: PathBuf,
     pub hash: String,

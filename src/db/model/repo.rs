@@ -1,16 +1,16 @@
-use sea_orm::DeriveEntityModel;
+use sea_orm::*;
+use sea_orm::prelude::Json;
 use serde::{Deserialize, Serialize};
-use sqlx::{Decode, Encode};
-use sqlx::types::Json;
 use time::OffsetDateTime;
 use uuid::Uuid;
 
-#[derive(Encode,Decode,Serialize,Deserialize,Debug,Clone,PartialEq,Eq,DeriveEntityModel)]
+#[derive(Serialize,Deserialize,Debug,Clone,PartialEq,Eq,DeriveEntityModel)]
 #[sea_orm(table_name = "repo")]
-pub struct RepoModule{
-    pub uid: String,
+pub struct Model{
+    #[sea_orm(primary_key)]
+    pub uid: Uuid,
     pub repo_avatar_url: Option<String>,
-    pub origin: Json<RepoOrigin>,
+    pub origin: Json,
     pub visible: bool,
     pub use_public_storage: bool,
     pub bio: String,
@@ -27,3 +27,10 @@ pub enum RepoOrigin{
     Group(Uuid),
     User(Uuid),
 }
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {
+}
+
+
+impl ActiveModelBehavior for ActiveModel {}
