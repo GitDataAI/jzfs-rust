@@ -9,6 +9,7 @@ use uuid::Uuid;
 pub struct Model{
     #[sea_orm(primary_key)]
     pub uid: Uuid,
+    pub name: String,
     pub repo_avatar_url: Option<String>,
     pub origin: Json,
     pub visible: bool,
@@ -17,6 +18,7 @@ pub struct Model{
     pub branch: Vec<Uuid>,
     pub forks: u64,
     pub stars: u64,
+    pub fork_from: Option<Uuid>,
     pub create_id: Uuid,
     pub create_at: OffsetDateTime,
     pub update_at: OffsetDateTime,

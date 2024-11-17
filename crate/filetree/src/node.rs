@@ -64,6 +64,7 @@ mod tests {
         NodeTree{
             local: path,
             file_name: name,
+            is_dir: false,
             children: vec![],
             hash,
         }

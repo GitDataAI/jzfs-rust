@@ -5,6 +5,7 @@ use serde::Deserialize;
 use base64::prelude::*;
 use serde_json::json;
 use time::format_description;
+use uuid::Uuid;
 use crate::api::controller::session::{IsLogin, UsersModel};
 use crate::api::server::auth::AuthServer;
 use crate::db::model::users;
@@ -38,7 +39,7 @@ pub struct UpdateAny{
     pub location: Option<String>,
     pub timezone: Option<String>,
     pub language: Option<String>,
-    pub groups: Option<Vec<String>>,
+    pub groups: Option<Vec<Uuid>>,
 }
 #[derive(Deserialize)]
 pub struct AuthBase64{

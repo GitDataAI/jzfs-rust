@@ -26,19 +26,19 @@ pub struct PubKey{
 pub fn keys(cfg: &mut web::ServiceConfig) {
     cfg
         .service(
-            web::scope("/list")
-                .route("/token",web::post().to(list_token))
-                .route("/pubkey",web::post().to(list_public_key))
+            web::scope("list")
+                .route("token",web::post().to(list_token))
+                .route("pubkey",web::post().to(list_public_key))
         )
         .service(
-            web::scope("/add")
-                .route("/token",web::post().to(generate_token))
-                .route("/pubkey", web::post().to(add_public_key))
+            web::scope("add")
+                .route("token",web::post().to(generate_token))
+                .route("pubkey", web::post().to(add_public_key))
         )
         .service(
-            web::scope("/remove")
-                .route("/token",web::post().to(del_token))
-                .route("/pubkey", web::post().to(del_public_key))
+            web::scope("remove")
+                .route("token",web::post().to(del_token))
+                .route("pubkey", web::post().to(del_public_key))
         )
     ;
 }
