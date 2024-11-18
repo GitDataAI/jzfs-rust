@@ -1,4 +1,3 @@
-use sea_orm::prelude::Json;
 use sea_orm::*;
 use serde::{Deserialize, Serialize};
 use sqlx::{Decode, Encode};

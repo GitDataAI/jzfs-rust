@@ -20,7 +20,7 @@ pub struct Model{
     pub location: Option<String>,
     pub time_zone: Option<String>,
     pub language: Option<String>,
-    pub groups: Vec<String>,
+    pub groups: Vec<Uuid>,
 
     pub create_at: OffsetDateTime,
     pub update_at: OffsetDateTime,

@@ -1,8 +1,7 @@
 pub mod v1;
-mod session;
+pub(crate) mod session;
 
 use crate::api::controller::v1::v1_router;
-use crate::db::auth_db;
 use actix_session::config::BrowserSession;
 use actix_session::storage::RedisSessionStore;
 use actix_session::SessionMiddleware;
@@ -17,7 +16,6 @@ pub struct ClientController;
 impl ClientController {
     #[inline]
     pub async fn run(&self) -> io::Result<()>{
-        auth_db::init().await;
         let config = CFG.clone();
         let secret_key = Key::from(&[0; 64]);
         let redis_store = RedisSessionStore::new(config.get_redis())
@@ -35,7 +33,7 @@ impl ClientController {
                         .cookie_same_site(SameSite::Lax)
                         .session_lifecycle(
                             BrowserSession::default()
-                                .state_ttl(Duration::days(7))
+                                .state_ttl(Duration::days(30))
                         )
                         .build()
                 )

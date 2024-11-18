@@ -6,3 +6,7 @@ edition = "2021"
 [dependencies]
 serde_derive = { version = "1.0.215" }
 serde = { version = "1.0.215",features = ["derive"]}
+async-trait = "0.1.83"
+lazy_static = "1.5.0"
+uuid = { version = "1.11.0",features = ["v4"] }
+sha256 = { version = "1.5.0",features = ["default"] }
