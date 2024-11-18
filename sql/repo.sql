@@ -1,24 +1,26 @@
 create table repo
 (
-    uid                uuid                       not null  primary key,
-    repo_avatar_url    text,
-    origin             text                       not null,
-    visible            boolean   default true     not null,
-    use_public_storage boolean   default true     not null,
-    bio                text      default ''::text not null,
-    branch             uuid[]                     not null,
-    forks              integer   default 0        not null,
-    stars              integer   default 0        not null,
-    create_id          uuid                       not null,
-    create_at          timestamp default now()    not null,
-    update_at          timestamp default now()    not null,
-    fork_from          uuid,
-    name               text      default ''::text not null
+    uid             uuid                       not null
+        primary key,
+    repo_avatar_url text,
+    origin          text                       not null,
+    visible         boolean   default true     not null,
+    use_storage     text      default true     not null,
+    bio             text      default ''::text not null,
+    branch          uuid[]                     not null,
+    forks           integer   default 0        not null,
+    stars           integer   default 0        not null,
+    create_id       uuid                       not null,
+    create_at       timestamp default now()    not null,
+    update_at       timestamp default now()    not null,
+    fork_from       uuid,
+    name            text      default ''::text not null
 );
 
 create table brands
 (
-    uid       uuid                       not null   primary key,
+    uid       uuid                       not null
+        primary key,
     repo_id   uuid                       not null,
     name      text      default ''::text not null,
     bio       text      default ''::text not null,
@@ -26,7 +28,6 @@ create table brands
     create_at timestamp default now()    not null,
     update_at timestamp default now()    not null
 );
-
 
 create table filetree
 (
@@ -36,7 +37,6 @@ create table filetree
     branch_id uuid not null,
     file_tree text not null
 );
-
 
 create table commit
 (
@@ -50,10 +50,11 @@ create table commit
     file_tree text                  not null
 );
 
-
 create table stars
 (
-    uid         uuid   not null primary key,
+    uid         uuid   not null
+        primary key,
     owner_id    uuid   not null,
     stars_repos uuid[] not null
 );
+

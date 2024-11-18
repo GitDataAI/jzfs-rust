@@ -12,11 +12,10 @@ create table users
     location   varchar(255),
     time_zone  varchar(255),
     language   varchar(255),
-    groups     text[],
+    groups     uuid[],
     create_at  timestamp with time zone default now() not null,
     update_at  timestamp with time zone default now() not null
 );
-
 
 create table pubkey
 (
@@ -42,7 +41,6 @@ create table pubtoken
     update_at  timestamp with time zone default now() not null
 );
 
-
 create table groups
 (
     uid        uuid                       not null
@@ -59,5 +57,6 @@ create table groups
     header     uuid                       not null,
     create_to  uuid                       not null,
     create_at  timestamp default now()    not null,
-    update_at  timestamp default now()    not null
+    update_at  timestamp default now()    not null,
+    contact    text                       not null
 );
