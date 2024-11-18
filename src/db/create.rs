@@ -17,7 +17,7 @@ impl InitDatabase {
     pub async fn init(){
         auth_db::init().await;
         repo_db::init().await;
-        let sf = Self{
+        let _sf = Self{
             auth_db: AUTHDB.get().unwrap().clone(),
             repo_db: AUTHDB.get().unwrap().clone(),
         };

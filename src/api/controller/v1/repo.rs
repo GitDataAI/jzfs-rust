@@ -19,6 +19,27 @@ pub struct RepoCreate{
     origin: Uuid,
     is_group: bool,
 }
+#[derive(Deserialize)]
+pub struct RepoVisible{
+    uid: Uuid,
+    owner_id: Uuid,
+    is_group: bool,
+    visible: bool,
+}
+#[derive(Deserialize)]
+pub struct RepoBio{
+    uid: Uuid,
+    owner_id: Uuid,
+    is_group: bool,
+    bio: String,
+}
+pub struct RepoMove{
+    uid: Uuid,
+    old_owner_id: Uuid,
+    old_is_group: bool,
+    new_owner_id: Uuid,
+    new_is_group: bool,
+}
 
 
 pub fn repo(cfg: &mut web::ServiceConfig) {
@@ -64,7 +85,7 @@ pub async fn create_repo(session: Session,repo: Json<RepoCreate>) -> impl Respon
             }
         }),
         visible: Set(repo.visible),
-        use_public_storage: Default::default(),
+        use_storage: Default::default(),
         bio: Set(repo.bio.clone()),
         branch: Set(Vec::new()),
         forks: Set(0),
@@ -75,8 +96,36 @@ pub async fn create_repo(session: Session,repo: Json<RepoCreate>) -> impl Respon
         update_at: Default::default(),
     };
     match repos.create_repo(model).await{
-        Ok(insert) => {
-            todo!()
+        Ok(_) => {
+            HttpResponse::Ok().json(json!({"code": 200, "msg": "Success"}))
+        }
+        Err(e) => {
+            let err = format!("Internal server error: {}", e);
+            HttpResponse::Ok().json(json!({"code": 500,"msg": err,}))
+        }
+    }
+}
+pub async fn update_visible(dto: Json<RepoVisible>) -> impl Responder {
+    let repo = RepoServer::new();
+    match repo.update_visible(dto.uid,{
+        match dto.is_group {
+            true => {
+                RepoOrigin::Group(dto.owner_id)
+            }
+            false => {
+                RepoOrigin::User(dto.owner_id)
+            }
+        }
+    }, dto.visible).await{
+        Ok(result) => {
+            let result = format!("{}",result.rows_affected);
+            HttpResponse::Ok().json(json!({
+                "code": 200,
+                "msg": "Success",
+                "data": {
+                    "rows_affected": result
+                }
+            }))
         }
         Err(e) => {
             let err = format!("Internal server error: {}", e);
@@ -87,3 +136,38 @@ pub async fn create_repo(session: Session,repo: Json<RepoCreate>) -> impl Respon
         }
     }
 }
+pub async fn update_bio(dto: Json<RepoBio>) -> impl Responder {
+    let repo = RepoServer::new();
+    match repo.update_bio(dto.uid,{
+        match dto.is_group {
+            true => {
+                RepoOrigin::Group(dto.owner_id)
+            }
+            false => {
+                RepoOrigin::User(dto.owner_id)
+            }
+        }
+    }, dto.bio.clone()).await{
+        Ok(result) => {
+            let result = format!("{}",result.rows_affected);
+            HttpResponse::Ok().json(json!({
+                "code": 200,
+                "msg": "Success",
+                "data": {
+                    "rows_affected": result
+                }
+            }))
+        }
+        Err(e) => {
+            let err = format!("Internal server error: {}", e);
+            HttpResponse::Ok().json(json!({
+                "code": 500,
+                "msg": err,
+            }))
+        }
+    }
+}
+
+// pub async fn move_repo(dto: Json<RepoMove>) -> impl Responder{
+//
+// }

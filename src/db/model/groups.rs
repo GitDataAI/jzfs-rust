@@ -18,6 +18,7 @@ pub struct Model{
     pub topics: Vec<String>,
     pub pinned: Vec<Uuid>,
     pub header: Uuid,
+    pub contact: String,
     pub create_to:Uuid,
     pub create_at: OffsetDateTime,
     pub update_at: OffsetDateTime

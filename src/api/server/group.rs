@@ -23,18 +23,19 @@ impl GroupServer {
     pub fn new() -> Self{
         Self::default()
     }
-    pub async fn create_group(&self,name: String, avatar_url: Option<String>,bio: String,location: Option<String>, owner_id: Uuid,topics: Vec<String>) -> io::Result<groups::Model>{
+    pub async fn create_group(&self, name: String, bio: String, owner_id: Uuid, contact: String) -> io::Result<groups::Model>{
         match (groups::ActiveModel{
             uid: Set(Uuid::new_v4()),
             name: Set(name),
-            avatar_url: Set(avatar_url),
+            avatar_url: Set(None),
             bio: Set(bio),
-            location: Set(location),
+            location: Set(None),
             links: Set(Vec::new()),
             users: Set(vec![owner_id]),
-            topics: Set(topics),
+            topics: Set(Vec::new()),
             pinned: Set(Vec::new()),
             header: Set(owner_id),
+            contact: Set(contact),
             create_to: Default::default(),
             create_at: Default::default(),
             update_at: Default::default(),

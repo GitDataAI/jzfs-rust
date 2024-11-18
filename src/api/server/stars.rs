@@ -36,7 +36,6 @@ impl StarsServer {
                 owner_id,
                 stars_repo: vec![],
             })
-
         }
         let mut model = model.unwrap().into_active_model();
         let mut repos = model.stars_repo.unwrap();

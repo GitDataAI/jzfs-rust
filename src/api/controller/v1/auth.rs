@@ -55,7 +55,7 @@ pub fn auth(cfg: &mut web::ServiceConfig) {
         .route("updatawp",web::post().to(update_passwd))
         .route("updata",web::post().to(update_any));
 }
-
+#[inline]
 pub async fn login(bean: web::Json<AuthBase64>,session: Session) -> impl Responder{
     let inner = STANDARD.decode(bean.inner.as_bytes());
     if inner.is_err() {
@@ -117,6 +117,7 @@ pub async fn login(bean: web::Json<AuthBase64>,session: Session) -> impl Respond
         }
     }
 }
+#[inline]
 pub async fn register(bean: web::Json<AuthBase64>) -> impl Responder{
     let inner = STANDARD.decode(bean.inner.as_bytes());
     if inner.is_err() {
@@ -156,6 +157,7 @@ pub async fn register(bean: web::Json<AuthBase64>) -> impl Responder{
         }
     }
 }
+#[inline]
 pub async fn logout(session: Session) -> impl Responder{
     session.clear();
     HttpResponse::Ok()
@@ -165,6 +167,7 @@ pub async fn logout(session: Session) -> impl Responder{
             "msg": "Logout successful"
     }))
 }
+#[inline]
 pub async fn local(session: Session) -> impl Responder{
     let model = session.get::<users::Model>(UsersModel);
     if model.is_err() {
@@ -217,6 +220,7 @@ pub async fn local(session: Session) -> impl Responder{
 
 
 }
+#[inline]
 pub async fn update_passwd(bean: web::Json<AuthBase64>,session: Session) -> impl Responder{
     let inner = STANDARD.decode(bean.inner.as_bytes());
     if inner.is_err() {
@@ -276,6 +280,7 @@ pub async fn update_passwd(bean: web::Json<AuthBase64>,session: Session) -> impl
     }
 
 }
+#[inline]
 pub async fn update_any(bean: web::Json<UpdateAny>,session: Session) -> impl Responder{
     let model = session.get::<users::Model>(UsersModel);
     if model.is_err() {

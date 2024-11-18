@@ -13,7 +13,7 @@ pub struct Model{
     pub repo_avatar_url: Option<String>,
     pub origin: Json,
     pub visible: bool,
-    pub use_public_storage: bool,
+    pub use_storage: bool,
     pub bio: String,
     pub branch: Vec<Uuid>,
     pub forks: u64,

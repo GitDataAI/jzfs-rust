@@ -2,7 +2,6 @@ pub mod v1;
 pub(crate) mod session;
 
 use crate::api::controller::v1::v1_router;
-use crate::db::auth_db;
 use actix_session::config::BrowserSession;
 use actix_session::storage::RedisSessionStore;
 use actix_session::SessionMiddleware;
