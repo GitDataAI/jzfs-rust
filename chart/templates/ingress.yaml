@@ -17,10 +17,10 @@ metadata:
 spec:
   ingressClassName: {{.Values.ingress_name}}
   rules:
-    - host: devcloud.gitdata.ai
+    - host: api.repanel.cn
       http:
         paths:
-          - path: /api
+          - path: /
             pathType: Prefix
             backend:
               service:
