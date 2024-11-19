@@ -15,7 +15,12 @@ pub trait AsyncFile{
 
 pub trait AsyncFolder{
     type Error;
-    async fn mkdir(&mut self, local: &str) -> Result<(), Self::Error>;
-    async fn rmdir(&mut self, local: &str) -> Result<(), Self::Error>;
-    async fn move_files(&mut self, local: &str, remote: &str) -> Result<(), Self::Error>;
+    fn mkdir(&mut self, local: &str) -> Result<(), Self::Error>;
+    fn rmdir(&mut self, local: &str) -> Result<(), Self::Error>;
+    fn move_files(&mut self, local: &str, remote: &str) -> impl std::future::Future<Output = Result<(), Self::Error>> + Send;
+}
+
+#[test]
+fn build(){
+    println!("Hello FileTree")
 }
