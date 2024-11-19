@@ -21,4 +21,4 @@ spec:
           image: gitdatateam/jzfs-rs:{{ .Values.tag }}
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 34513
