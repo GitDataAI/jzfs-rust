@@ -4,13 +4,14 @@ pub(crate) mod session;
 use crate::api::controller::v1::v1_router;
 use crate::config::CFG;
 use actix_cors::Cors;
-use actix_session::config::{BrowserSession, TtlExtensionPolicy};
+use actix_session::config::{PersistentSession, TtlExtensionPolicy};
 use actix_session::storage::RedisSessionStore;
 use actix_session::SessionMiddleware;
 use actix_web::cookie::{Key, SameSite};
 use actix_web::dev::Service;
-use actix_web::{http, web, App, Responder};
+use actix_web::{web, App, Responder};
 use std::io;
+use actix_web::middleware::Logger;
 use time::Duration;
 
 pub struct ClientController;
@@ -26,6 +27,7 @@ impl ClientController {
 
         actix_web::HttpServer::new(move || {
             App::new()
+                .wrap(Logger::default())
                 .wrap(Cors::permissive())
                 .wrap(
                     SessionMiddleware::builder(
@@ -37,9 +39,9 @@ impl ClientController {
                         .cookie_same_site(SameSite::None)
                         .cookie_http_only(false)
                         .session_lifecycle(
-                            BrowserSession::default()
-                                .state_ttl(Duration::days(30))
-                                .state_ttl_extension_policy(TtlExtensionPolicy::OnEveryRequest)
+                            PersistentSession::default()
+                                .session_ttl(Duration::days(30))
+                                .session_ttl_extension_policy(TtlExtensionPolicy::OnEveryRequest)
                         )
                         .build()
                 )
