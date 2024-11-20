@@ -17,7 +17,7 @@ metadata:
 spec:
   ingressClassName: {{.Values.ingress_name}}
   rules:
-    - host: api.repanel.cn
+    - host: api.rspanel.cn
       http:
         paths:
           - path: /
