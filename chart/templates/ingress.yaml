@@ -35,4 +35,4 @@ spec:
               service:
                 name: jzfs-rust-service
                 port:
-                  number: 34513
+                  number: 80
