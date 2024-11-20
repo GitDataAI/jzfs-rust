@@ -36,6 +36,7 @@ impl ClientController {
                         .cookie_path(String::from("/"))
                         .cookie_same_site(SameSite::None)
                         .cookie_http_only(false)
+                        .cookie_domain(Some(String::from("devcloud.gitdata.ai")))
                         .session_lifecycle(
                             BrowserSession::default()
                                 .state_ttl(Duration::days(30))
