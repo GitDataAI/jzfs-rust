@@ -573,7 +573,7 @@ pub async fn verification_code(session: Session, code: web::Json<SendEmailCode>)
             return HttpResponse::Ok()
                 .json(json!({
                     "code": 400,
-                    "msg": "failed"
+                    "msg": "failed 03"
                 }))
         }
         Some(code) => {
@@ -585,7 +585,7 @@ pub async fn verification_code(session: Session, code: web::Json<SendEmailCode>)
             return HttpResponse::Ok()
                 .json(json!({
                     "code": 400,
-                    "msg": "failed"
+                    "msg": "failed 02"
                 }))
         }
         Some(code) => {
@@ -596,7 +596,7 @@ pub async fn verification_code(session: Session, code: web::Json<SendEmailCode>)
         return HttpResponse::Ok()
             .json(json!({
                 "code": 400,
-                "msg": "failed"
+                "msg": "failed 01"
             }))
     }
     if verification_code == code.code {
@@ -612,7 +612,7 @@ pub async fn verification_code(session: Session, code: web::Json<SendEmailCode>)
         HttpResponse::Ok()
             .json(json!({
                 "code": 400,
-                "msg": "failed"
+                "msg": "failed 04"
             }))
     }
 
