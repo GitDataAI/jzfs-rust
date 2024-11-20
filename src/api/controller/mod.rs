@@ -47,6 +47,7 @@ impl ClientController {
                         .configure(v1_router)
                 )
                 .route("/",web::get().to(hello))
+                .route("/api",web::get().to(hello))
         })
             .bind((config.http.host, config.http.port))?
             .workers(config.http.workers)
