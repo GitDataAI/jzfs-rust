@@ -35,6 +35,7 @@ impl ClientController {
                         .cookie_name(String::from("SessionID"))
                         .cookie_path(String::from("/"))
                         .cookie_same_site(SameSite::None)
+                        .cookie_http_only(false)
                         .session_lifecycle(
                             BrowserSession::default()
                                 .state_ttl(Duration::days(30))
