@@ -9,6 +9,11 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,Content-Type,Authorization,Origin,Accept,Access-Control-Request-Method,Access-Control-Request-Headers"
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-expose-headers: "Content-Length,Content-Range"
   labels:
     apptype: jzfs-rust
     app.kubernetes.io/managed-by: Helm
@@ -17,7 +22,7 @@ metadata:
 spec:
   ingressClassName: {{.Values.ingress_name}}
   rules:
-    - host: api.rspanel.cn
+    - host: v1.jiaozifs.com
       http:
         paths:
           - path: /
