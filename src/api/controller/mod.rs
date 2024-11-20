@@ -46,11 +46,13 @@ impl ClientController {
                         .build()
                 )
                 .service(
-                    web::scope("/v1")
-                        .configure(v1_router)
+                    web::scope("/api")
+                        .service(
+                            web::scope("/v1")
+                                .configure(v1_router)
+                        )
+                        .route("/hello",web::get().to(hello))
                 )
-                .route("/",web::get().to(hello))
-                .route("/api",web::get().to(hello))
         })
             .bind((config.http.host, config.http.port))?
             .workers(config.http.workers)

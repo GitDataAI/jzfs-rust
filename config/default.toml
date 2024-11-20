@@ -1,5 +1,5 @@
 [http]
-port = 80
+port = 6080
 host = "0.0.0.0"
 workers = 12
 
