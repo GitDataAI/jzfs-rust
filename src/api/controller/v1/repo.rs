@@ -33,14 +33,6 @@ pub struct RepoBio{
     is_group: bool,
     bio: String,
 }
-pub struct RepoMove{
-    uid: Uuid,
-    old_owner_id: Uuid,
-    old_is_group: bool,
-    new_owner_id: Uuid,
-    new_is_group: bool,
-}
-
 
 pub fn repo(cfg: &mut web::ServiceConfig) {
     cfg

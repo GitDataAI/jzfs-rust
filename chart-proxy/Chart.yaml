@@ -1,0 +1,13 @@
+apiVersion: v2
+name: jzfs-proxy-rust
+description: jzfs proxy home and cloud
+version: 1.0.0
+home: https://devcloud.gitdata.ai/
+keywords:
+  - gitdata-rust
+  - rust
+  - proxy
+sources:
+  - https://github.com/GitdataAi/jzfs-rs
+maintainers:
+  - name: jiaozifs team

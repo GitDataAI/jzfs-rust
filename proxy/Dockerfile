@@ -4,8 +4,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY  target/release/jzfs-api ./
-COPY ./config ./config
+COPY  target/release/proxy ./
 
 EXPOSE 34513
-CMD ["/app/jzfs-api"]
+CMD ["/app/proxy"]

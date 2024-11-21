@@ -8,7 +8,6 @@ use actix_session::config::{PersistentSession, TtlExtensionPolicy};
 use actix_session::storage::RedisSessionStore;
 use actix_session::SessionMiddleware;
 use actix_web::cookie::{Key, SameSite};
-use actix_web::dev::Service;
 use actix_web::{web, App, Responder};
 use std::io;
 use actix_web::middleware::Logger;

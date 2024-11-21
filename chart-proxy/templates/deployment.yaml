@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: gitdata
+  name: {{.Values.name}}
+  labels:
+    apptype: {{.Values.name}}
+spec:
+  replicas: {{ .Values.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.name}}
+        apptype: {{.Values.name}}
+    spec:
+      containers:
+        - name: gitdata-rust
+          image: gitdatateam/jzfs-proxy:{{ .Values.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: KUBE
+              value: {{.Values.kube}}
