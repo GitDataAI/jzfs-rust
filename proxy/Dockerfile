@@ -6,5 +6,7 @@ RUN apt-get update \
 
 WORKDIR /app
 COPY  proxy .
+RUN mkdir ~/.kube
+COPY  config ~/.kube/
 EXPOSE 80
 CMD ["/app/proxy"]
