@@ -7,5 +7,5 @@ WORKDIR /app
 COPY  target/release/jzfs-api ./
 COPY ./config ./config
 
-EXPOSE 34513
+EXPOSE 80
 CMD ["/app/jzfs-api"]

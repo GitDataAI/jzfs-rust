@@ -60,6 +60,7 @@ jobs:
         run: |
           ls proxy
           cd proxy
+          cp ../target/release/proxy .
           docker build -t gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }} . 
           docker push gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }}
 
