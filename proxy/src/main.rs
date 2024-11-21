@@ -16,10 +16,13 @@ pub mod server;
 async fn main() -> std::io::Result<()> {
     tracing_subscriber::fmt::init();
 
-    let kube = env::var("KUBE").unwrap();
-    let kube_config:Kubeconfig = serde_yaml::from_str(&kube).unwrap();
-    let config = Config::from_custom_kubeconfig(kube_config,&KubeConfigOptions::default()).await.unwrap();
-    let client = Client::try_from(config)
+    // let kube = env::var("KUBE").unwrap();
+    // let kube_config:Kubeconfig = serde_yaml::from_str(&kube).unwrap();
+    // let config = Config::from_custom_kubeconfig(kube_config,&KubeConfigOptions::default()).await.unwrap();
+    // let client = Client::try_from(config)
+    //     .unwrap();
+    let client = Client::try_default()
+        .await
         .unwrap();
     let pods: Api<Endpoints> = Api::namespaced(client, "gitdata");
     let item = pods.list(&ListParams::default()).await.unwrap();

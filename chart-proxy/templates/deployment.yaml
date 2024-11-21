@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: jzfs-proxy
-          image: gitdatateam/jzfs-proxy:{{ .Values.tag }}
+          image: gitdatateam/jzfs-proxy-rs:{{ .Values.tag }}
           imagePullPolicy: Always
           ports:
             - containerPort: 80
