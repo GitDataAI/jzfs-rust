@@ -4,7 +4,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY  target/release/proxy ./
+COPY  ../target/release/proxy ./
 
 EXPOSE 34513
 CMD ["/app/proxy"]
