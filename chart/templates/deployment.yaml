@@ -17,7 +17,7 @@ spec:
         apptype: jzfs-rust
     spec:
       containers:
-        - name: gitdata-rust
+        - name: jzfs-rust
           image: gitdatateam/jzfs-rs:{{ .Values.tag }}
           imagePullPolicy: Always
           ports:

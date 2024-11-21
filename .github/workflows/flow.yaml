@@ -63,10 +63,11 @@ jobs:
           cp ../target/release/proxy .
           docker build -t gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }} . 
           docker push gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }}
+          cd ..
 
       - name: Deploy
         uses: WyriHaximus/github-action-helm3@v3
         with:
-          exec: /usr/sbin/helm upgrade jzfs-proxy-rs --install ./chart-proxy/ --namespace gitdata --set-string tag='${{ steps.version.outputs.version }}' --set-string kube='${{ secrets.KUBECONTENT }}'
+          exec: /usr/sbin/helm upgrade jzfs-proxy-rs --install ./chart-proxy/ --namespace gitdata --set-string tag=${{ steps.version.outputs.version }} --set-string kube='${{ secrets.KUBECONTENT }}'
           kubeconfig: ${{ secrets.KUBECONTENT }}
           overrule_existing_kubeconfig: "true"

@@ -17,7 +17,7 @@ spec:
         apptype: {{.Values.name}}
     spec:
       containers:
-        - name: gitdata-rust
+        - name: jzfs-proxy
           image: gitdatateam/jzfs-proxy:{{ .Values.tag }}
           imagePullPolicy: Always
           ports:

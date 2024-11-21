@@ -6,4 +6,4 @@ ingress_name: nginx
 name: jzfs-proxy
 server_name: jzfs-proxy-server
 tag: latest
-kube: ""
+kube: ''
