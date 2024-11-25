@@ -1,0 +1,11 @@
+[package]
+name = "jzfs_service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies.jzfs_config]
+path = "../config"
+
+[dependencies]
+lettre = {version = "0.11.10",features = ["smtp-transport","serde","rustls-tls","rustls-native-certs", "hostname","tokio1","tokio1-rustls-tls","tokio1-native-tls"]}
+deadpool-redis = { version = "0.16.0",features = ["default"] }

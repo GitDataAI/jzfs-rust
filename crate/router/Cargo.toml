@@ -1,0 +1,15 @@
+[package]
+name = "jzfs_router"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies.jzfs_module]
+path = "../module"
+
+
+
+[dependencies]
+actix-web = { version = "4.9.0",features = ["http2","cookies"] }
+actix-session = { version = "0.10.1",features = ["redis-pool","redis-session","default"] }
+rand = "0.8.5"

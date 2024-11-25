@@ -1,5 +1,5 @@
 [http]
-port = 80
+port = 6080
 host = "0.0.0.0"
 workers = 12
 
@@ -13,11 +13,11 @@ database = "auth"
 pool = 4
 
 [database.repo]
-hostname = "221.128.225.26"
+hostname = "localhost"
 port = 5432
-username = "1.2.3.4.5.6."
+username = "postgres"
 password = "123456"
-database = "repo"
+database = "jzfs"
 pool = 4
 
 

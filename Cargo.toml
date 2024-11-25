@@ -17,6 +17,10 @@ name = "jzfs-api"
 path = "bin/ssh.rs"
 name = "jzfs-ssh"
 
+[workspace]
+members = [ "crate/config",
+    "crate/entity"
+, "crate/module", "crate/router", "crate/service"]
 
 [profile.test]
 opt-level = 0
@@ -28,57 +32,11 @@ incremental = true
 codegen-units = 256
 rpath = false
 
-
-[workspace]
-members = [
-    "crate/filetree",
-    "proxy"
-]
-
-[dependencies.filetree]
-path = "crate/filetree"
-
+[dependencies.jzfs_router]
+path = "crate/router"
 
 [dependencies]
-
 tokio = { version = "1.40.0",features = ["full"] }
-futures-core = { version = "0.3.31",features = ["default"] }
-futures = { version = "0.3.31",features = ["default"] }
-
-serde = { version = "1.0.210",features = ["derive"] }
-serde_json = "1.0.130"
-toml = { version = "0.8.19",features = ["parse"] }
-
-russh = {version = "0.46.0",features = ["default","openssl"] }
-russh-keys = { version = "0.46.0",features = ["openssl"] }
-ed25519-dalek = { version = "2.1.1",features = ["serde","default","rand_core"] }
-git2 = { version = "0.19.0",features = ["default"] }
-
-actix-web = { version = "4.9.0",features = ["default","macros","http2"] }
-actix-session = { version = "0.10.1",features = ["redis-pool","redis-session","default"] }
-actix-cors = { version = "0.7.0",features = ["draft-private-network-access"] }
-actix-web-lab = { version = "0.23.0",features = ["derive","actix-files"] }
-
-lettre = {version = "0.11.10",features = ["smtp-transport","serde","rustls-tls","rustls-native-certs", "hostname","tokio1","tokio1-rustls-tls","tokio1-native-tls"]}
-lettre_email = "0.9.4"
-mime = "0.3.13"
-
-sqlx = { version = "0.8.2",features = ["runtime-tokio","all-databases","derive","uuid","time","migrate"] }
-sea-orm = {version = "1.1.1",features = ["time","runtime-tokio","sqlx-all","with-time","uuid","with-uuid"] }
-deadpool-redis = { version = "0.18.0",features = ["tokio","serde"] }
-deadpool = { version = "0.12.1",features = ["serde"]}
-
-sha256 = { version = "1.5.0",features = ["tokio"] }
-uuid = { version = "1.11.0",features = ["v4","serde"] }
-time = { version = "0.3.36",features = ["default","macros","local-offset","serde"] }
-lazy_static = "1.5.0"
-base64 = { version = "0.22.1",features = ["default"] }
-
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
-log = "0.4.22"
-async-trait = "0.1.83"
-rand_core = "0.6.4"
-env_logger = "0.11.5"
-rand = "0.8.5"
-http = "1.1.0"
+anyhow = "1.0.93"

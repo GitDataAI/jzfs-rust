@@ -43,32 +43,32 @@ jobs:
       - name: Build binary
         run: cargo build --workspace --release
 
-#      - name: Build and push jzfs-api
-#        run: |
-#          docker build -t gitdatateam/jzfs-rs:${{ steps.version.outputs.version }} .
-#          docker push gitdatateam/jzfs-rs:${{ steps.version.outputs.version }}
-#
-#
-#      - name: Deploy
-#        uses: WyriHaximus/github-action-helm3@v3
-#        with:
-#          exec: /usr/sbin/helm upgrade jzfs-rs --install ./chart/ --namespace gitdata --set-string tag=${{ steps.version.outputs.version }}
-#          kubeconfig: ${{ secrets.KUBECONTENT }}
-#          overrule_existing_kubeconfig: "true"
-
-      - name: Build and push proxy
+      - name: Build and push jzfs-api
         run: |
-          ls proxy
-          cd proxy
-          cp ../target/release/proxy .
-          cp /home/action/.kube/config .
-          docker build -t gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }} . 
-          docker push gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }}
-          cd ..
+          docker build -t gitdatateam/jzfs-rs:${{ steps.version.outputs.version }} .
+          docker push gitdatateam/jzfs-rs:${{ steps.version.outputs.version }}
+
 
       - name: Deploy
         uses: WyriHaximus/github-action-helm3@v3
         with:
-          exec: /usr/sbin/helm upgrade jzfs-proxy-rs --install ./chart-proxy/ --namespace gitdata --set-string tag=${{ steps.version.outputs.version }}
+          exec: /usr/sbin/helm upgrade jzfs-rs --install ./chart/ --namespace gitdata --set-string tag=${{ steps.version.outputs.version }}
           kubeconfig: ${{ secrets.KUBECONTENT }}
           overrule_existing_kubeconfig: "true"
+
+#      - name: Build and push proxy
+#        run: |
+#          ls proxy
+#          cd proxy
+#          cp ../target/release/proxy .
+#          cp /home/action/.kube/config .
+#          docker build -t gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }} .
+#          docker push gitdatateam/jzfs-proxy-rs:${{ steps.version.outputs.version }}
+#          cd ..
+#
+#      - name: Deploy
+#        uses: WyriHaximus/github-action-helm3@v3
+#        with:
+#          exec: /usr/sbin/helm upgrade jzfs-proxy-rs --install ./chart-proxy/ --namespace gitdata --set-string tag=${{ steps.version.outputs.version }}
+#          kubeconfig: ${{ secrets.KUBECONTENT }}
+#          overrule_existing_kubeconfig: "true"
