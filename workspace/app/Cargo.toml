@@ -1,0 +1,41 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies.model]
+path = "../model"
+
+[dependencies.config]
+path = "../config"
+
+[dependencies.dto]
+path = "../dto"
+
+
+[dependencies]
+actix-web = { version = "4.9.0",features = ["default","cookies"] }
+actix-session = { version = "0.10.1",features = ["redis-pool","redis-session"] }
+
+deadpool = { version = "0.12.1",features = ["serde"] }
+deadpool-redis = { version = "0.16.0",features = ["serde","default"] }
+
+serde = { version = "1.0.215",features = ["derive"] }
+serde_json = { version = "1.0.133" }
+uuid = { version = "1.11.0",features = ["v4","serde","default"] }
+chrono = { version = "0.4.38",features = ["std","serde"] }
+
+
+rbs = { version = "4.5" }
+rbdc-pg={version="4.5", default-features = false, features = ["tls-native-tls"]}
+rbatis = { version = "4.5" }
+tokio = { version = "1", features = ["full"] }
+
+sha256 = { version = "1.5.0",features = ["tokio"] }
+anyhow = { version = "1.0.93",features = ["std"] }
+log = "0.4.22"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+rand = { version = "0.8.5" }
+base64 = { version = "0.22.1",features = ["std"] }
+lettre = {version = "0.11.10",features = ["smtp-transport","serde","rustls-tls","rustls-native-certs", "hostname","tokio1","tokio1-rustls-tls","tokio1-native-tls"]}

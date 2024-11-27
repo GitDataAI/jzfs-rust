@@ -1,0 +1,12 @@
+[package]
+name = "config"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.9.0"
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.133"
+tokio = "1.41.1"
+deadpool-redis = { version = "0.16.0",features = ["serde"]}
+log = "0.4.22"
