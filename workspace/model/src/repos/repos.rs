@@ -13,8 +13,8 @@ pub struct ReposModel{
     pub private: bool,
     pub fork: bool,
     pub fork_from: Option<Uuid>,
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub created_at: rbatis::rbdc::timestamp::Timestamp,
+    pub updated_at: rbatis::rbdc::timestamp::Timestamp,
 }
 
 crud!(ReposModel{}, "repos");

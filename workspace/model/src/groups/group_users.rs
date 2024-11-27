@@ -12,8 +12,8 @@ pub struct GroupUserModel{
     pub uid: Uuid,
     pub group_id: Uuid,
     pub users_id: JsonV<HashMap<Uuid, GroupUsersAccess>>,
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    pub updated_at: chrono::DateTime<chrono::Utc>
+    pub created_at: rbatis::rbdc::timestamp::Timestamp,
+    pub updated_at: rbatis::rbdc::timestamp::Timestamp
 }
 
 crud!(GroupUserModel{}, "group_users");

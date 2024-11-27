@@ -13,6 +13,6 @@ pub enum GroupUsersAccessEnum{
 #[derive(Deserialize,Serialize,Debug,Clone)]
 pub struct GroupUsersAccess{
     pub access: GroupUsersAccessEnum,
-    pub join_at: chrono::DateTime<chrono::Utc>,
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub join_at: rbatis::rbdc::timestamp::Timestamp,
+    pub updated_at: rbatis::rbdc::timestamp::Timestamp,
 }

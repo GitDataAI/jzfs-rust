@@ -10,3 +10,4 @@ uuid = { version = "1.11.0",features = ["v4","serde","default"] }
 chrono = { version = "0.4.38",features = ["std","serde"] }
 
 rbatis = { version = "4.5.37",features = ["default"] }
+fastdate = { version = "0.3.34",features = []}

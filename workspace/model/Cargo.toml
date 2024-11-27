@@ -12,4 +12,5 @@ chrono = { version = "0.4.38",features = ["std","serde"] }
 
 rbs = { version = "4.5" }
 rbdc-pg={version="4.5", default-features = false, features = ["tls-native-tls"]}
-rbatis = { version = "4.5" }
+rbatis = { version = "4.5",features = ["default"] }
+fastdate = { version = "0.3.34",features = []}

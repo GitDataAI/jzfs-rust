@@ -23,7 +23,8 @@ deadpool-redis = { version = "0.16.0",features = ["serde","default"] }
 serde = { version = "1.0.215",features = ["derive"] }
 serde_json = { version = "1.0.133" }
 uuid = { version = "1.11.0",features = ["v4","serde","default"] }
-chrono = { version = "0.4.38",features = ["std","serde"] }
+fastdate = { version = "0.3.34",features = []}
+
 
 
 rbs = { version = "4.5" }

@@ -8,8 +8,8 @@ pub struct GroupModel{
     pub name: String,
     pub bio: String,
     pub avatar: String,
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub created_at: rbatis::rbdc::timestamp::Timestamp,
+    pub updated_at: rbatis::rbdc::timestamp::Timestamp,
 }
 
 

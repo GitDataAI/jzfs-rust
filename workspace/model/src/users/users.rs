@@ -17,8 +17,8 @@ pub struct UsersModel{
     pub pro: bool,
     pub active: bool,
     pub repo: JsonV<HashMap<String, Uuid>>,
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub created_at: rbatis::rbdc::timestamp::Timestamp,
+    pub updated_at: rbatis::rbdc::timestamp::Timestamp,
 }
 
 

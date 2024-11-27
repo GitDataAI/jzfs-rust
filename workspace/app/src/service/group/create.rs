@@ -27,8 +27,8 @@ impl GroupService {
             name: dto.name.clone(),
             bio: dto.bio,
             avatar: dto.avatar,
-            created_at: chrono::Utc::now(),
-            updated_at: chrono::Utc::now(),
+            created_at: rbatis::rbdc::timestamp::Timestamp(fastdate::DateTime::now().unix_timestamp()),
+            updated_at: rbatis::rbdc::timestamp::Timestamp(fastdate::DateTime::now().unix_timestamp()),
         };
         GroupModel::insert(
             &self.db,
@@ -45,8 +45,8 @@ impl GroupService {
                     {
                         (uid, GroupUsersAccess{
                             access: GroupUsersAccessEnum::AccessOwner,
-                            join_at: chrono::Utc::now(),
-                            updated_at: chrono::Utc::now(),
+                            join_at: rbatis::rbdc::timestamp::Timestamp(fastdate::DateTime::now().unix_timestamp()),
+                            updated_at: rbatis::rbdc::timestamp::Timestamp(fastdate::DateTime::now().unix_timestamp()),
                         })
                     }
                 ])

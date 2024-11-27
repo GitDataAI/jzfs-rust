@@ -18,8 +18,8 @@ impl RepoService {
             private: dto.private,
             fork: false,
             fork_from: None,
-            created_at: chrono::Utc::now(),
-            updated_at: chrono::Utc::now(),
+            created_at: rbatis::rbdc::timestamp::Timestamp(fastdate::DateTime::now().unix_timestamp()),
+            updated_at: rbatis::rbdc::timestamp::Timestamp(fastdate::DateTime::now().unix_timestamp()),
         };
         Ok(ReposModel::insert(
             &self.db,
