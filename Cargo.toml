@@ -13,30 +13,18 @@ name = "jzfs-main"
 path = "bin/api.rs"
 name = "jzfs-api"
 
-[[bin]]
-path = "bin/ssh.rs"
-name = "jzfs-ssh"
 
 [workspace]
-members = [ "crate/config",
-    "crate/entity"
-, "crate/module", "crate/router", "crate/service"]
+members = [
+    "workspace/app",
+    "workspace/config",
+    "workspace/dto",
+    "workspace/model"
+]
 
-[profile.test]
-opt-level = 0
-debug = true
-debug-assertions = true
-overflow-checks = true
-lto = false
-incremental = true
-codegen-units = 256
-rpath = false
+[dependencies.app]
+path = "workspace/app"
 
-[dependencies.jzfs_router]
-path = "crate/router"
 
 [dependencies]
-tokio = { version = "1.40.0",features = ["full"] }
-tracing = "0.1.40"
-tracing-subscriber = "0.3.18"
-anyhow = "1.0.93"
+tokio = { version = "1.41.1" ,features = ["full"] }

@@ -1,1 +1,1 @@
-pub use jzfs_router as apis;
+pub use app;
