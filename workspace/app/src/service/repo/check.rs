@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use log::error;
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use model::repos::repos::ReposModel;
 use crate::service::repo::RepoService;
 

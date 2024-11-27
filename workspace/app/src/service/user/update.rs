@@ -1,5 +1,5 @@
 use rbatis::rbdc::db::ExecResult;
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use dto::users::UserUpdate;
 use model::users::users::UsersModel;
 use crate::service::user::UserService;

@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use log::error;
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use model::groups::group_users::GroupUserModel;
 use model::groups::groups::GroupModel;
 use crate::service::group::GroupService;
@@ -20,7 +20,7 @@ impl GroupService {
                     .0
                     .contains_key(&uid)
             })
-            .map(|x| x.group_id)
+            .map(|x| x.group_id.clone())
             .collect::<Vec<Uuid>>();
         let mut results = Vec::new();
         for model in models {

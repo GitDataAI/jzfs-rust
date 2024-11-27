@@ -1,5 +1,6 @@
 use actix_session::Session;
 use actix_web::{web, Responder};
+use rbatis::rbdc::Uuid;
 use config::result::R;
 use dto::group::{GroupCheckNoName, GroupOwnerCheck};
 use dto::session::{SessionUserValue, SESSION_USER_KEY};
@@ -37,7 +38,7 @@ pub async fn api_group_owner_check(
     -> impl Responder
 {
     let model = session.get::<SessionUserValue>(SESSION_USER_KEY).unwrap().unwrap();
-    match service.group_service.check_group_owner(dto.into_inner().uid, model.uid).await{
+    match service.group_service.check_group_owner(Uuid(dto.into_inner().uid.to_string()), model.uid).await{
         Ok(r) => {
             R::<String>{
                 code: if r{ 200 }else { 201 },

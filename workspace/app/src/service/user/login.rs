@@ -19,7 +19,7 @@ impl UserService {
         let info = info.unwrap();
         if info.passwd == dto.password{
             return Ok(SessionUserValue{
-                uid: info.uid,
+                uid: rbatis::rbdc::Uuid(info.uid.to_string()),
                 name: info.name,
                 pro: info.pro,
                 username: info.username,

@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-
+use rbatis::rbdc::Uuid;
 #[derive(Deserialize,Serialize,Clone,Debug,Eq, PartialEq)]
 pub enum GroupUsersAccessEnum{
     AccessNone,

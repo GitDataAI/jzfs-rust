@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use anyhow::anyhow;
 use log::error;
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use dto::group::GroupOwnerMove;
 use model::groups::group_users::GroupUserModel;
 use model::groups::group_users_access::{GroupUsersAccess, GroupUsersAccessEnum};
@@ -9,7 +9,7 @@ use crate::service::group::GroupService;
 
 impl GroupService {
     pub async fn move_owner(&self, dto: GroupOwnerMove, uid: Uuid) -> anyhow::Result<()>{
-        if self.check_group_owner(dto.group_id, uid).await?{
+        if self.check_group_owner(Uuid(dto.group_id.to_string()), uid.clone()).await?{
             return Err(anyhow!("[Error] You are not the owner of this group"))
         }
         let group_users = GroupUserModel::select_by_column(&self.db, "group_id", dto.group_id).await
@@ -28,10 +28,10 @@ impl GroupService {
         })
             .map(|x| (x.0.clone(),x.1.clone()))
             .collect::<HashMap<Uuid, GroupUsersAccess>>();
-        if owner.contains_key(&dto.new_user_id){
+        if owner.contains_key(&Uuid(dto.new_user_id.to_string())){
             return Err(anyhow!("[Error] New Owner is already the owner of this group"))
         }
-        group_users.users_id.0.insert(dto.new_user_id, owner.get(&uid).unwrap().clone());
+        group_users.users_id.0.insert(Uuid(dto.new_user_id.to_string()), owner.get(&uid).unwrap().clone());
         GroupUserModel::update_by_column(
             &self.db,
             &group_users,

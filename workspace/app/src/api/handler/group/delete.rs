@@ -1,5 +1,6 @@
 use actix_session::Session;
 use actix_web::{web, Responder};
+use rbatis::rbdc::Uuid;
 use config::result::R;
 use dto::group::GroupDelete;
 use dto::session::{SessionUserValue, SESSION_USER_KEY};
@@ -13,7 +14,7 @@ pub async fn api_group_delete(
     -> impl Responder
 {
     let model = session.get::<SessionUserValue>(SESSION_USER_KEY).unwrap().unwrap();
-    match service.group_service.delete(dto.into_inner(), model.uid).await{
+    match service.group_service.delete(dto.into_inner(), Uuid(model.uid.to_string())).await{
         Ok(_) => {
             R::<String>{
                 code: 200,

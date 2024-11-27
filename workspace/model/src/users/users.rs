@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use rbatis::crud;
-use rbatis::rbdc::JsonV;
+use rbatis::rbdc::{JsonV, Uuid};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
+
 
 #[derive(Deserialize,Serialize,Clone,Debug)]
 pub struct UsersModel{

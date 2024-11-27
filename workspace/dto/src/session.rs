@@ -1,12 +1,11 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 pub const ALLOW_NEXT_KEY: &str = "allow_next";
 pub const CAPTCHA: &str = "captcha";
 pub const SESSION_USER_KEY: &str = "session_user";
 #[derive(Deserialize,Serialize,Clone,Debug)]
 pub struct SessionUserValue{
-    pub uid: Uuid,
+    pub uid: rbatis::rbdc::Uuid,
     pub name: String,
     pub pro: bool,
     pub username: String,

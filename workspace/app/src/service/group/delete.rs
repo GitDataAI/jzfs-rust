@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use anyhow::anyhow;
 use log::error;
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use dto::group::GroupDelete;
 use model::groups::group_users::GroupUserModel;
 use model::groups::group_users_access::{GroupUsersAccess, GroupUsersAccessEnum};

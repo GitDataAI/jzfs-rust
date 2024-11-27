@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use log::error;
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use dto::group::GroupUpdate;
 use model::groups::groups::GroupModel;
 use crate::service::group::GroupService;
@@ -20,7 +20,7 @@ impl GroupService {
             return Err(anyhow!("[Error] Group Not Found"))
         }
         let mut model = model.unwrap();
-        if self.check_group_owner(dto.group_id, uid).await?{
+        if self.check_group_owner(Uuid(dto.group_id.to_string()), uid).await?{
             return Err(anyhow!("[Error] You are not the owner of this group"))
         }
         if let Some(name) = dto.name{

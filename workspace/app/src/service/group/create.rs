@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use anyhow::anyhow;
 use log::error;
 use rbatis::rbdc::JsonV;
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use dto::group::GroupCreate;
 use model::groups::group_users::GroupUserModel;
 use model::groups::group_users_access::{GroupUsersAccess, GroupUsersAccessEnum};
@@ -11,11 +11,11 @@ use crate::service::group::GroupService;
 
 impl GroupService {
     pub async fn create(&self, dto: GroupCreate, uid: Uuid) -> anyhow::Result<()>{
-        let uuid = {
+        let uids = {
             loop {
-                let uid = Uuid::new_v4();
-                if self.check_no_uuid(uid).await?{
-                    break uid;
+                let uid = uuid::Uuid::new_v4();
+                if self.check_no_uuid(Uuid(uid.to_string())).await?{
+                    break Uuid(uid.to_string());
                 }
             }
         };
@@ -23,7 +23,7 @@ impl GroupService {
             return Err(anyhow!("[Error] Group Name Already Exists"))
         }
         let group_model = GroupModel{
-            uid: uuid,
+            uid: uids.clone(),
             name: dto.name.clone(),
             bio: dto.bio,
             avatar: dto.avatar,
@@ -38,8 +38,8 @@ impl GroupService {
             anyhow!("[Error] Create Group Failed")
         })?;
         let group_users = GroupUserModel{
-            uid: Uuid::new_v4(),
-            group_id: uuid,
+            uid: Uuid(uuid::Uuid::new_v4().to_string()),
+            group_id: uids,
             users_id: JsonV(
                 HashMap::from([
                     {
@@ -54,7 +54,7 @@ impl GroupService {
             created_at: Default::default(),
             updated_at: Default::default(),
         };
-       
+
         GroupUserModel::insert(
             &self.db,
             &group_users

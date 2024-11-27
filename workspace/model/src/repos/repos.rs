@@ -1,6 +1,6 @@
 use rbatis::{crud, impl_select};
+use rbatis::rbdc::Uuid;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 #[derive(Deserialize,Serialize,Debug,Clone)]
 pub struct ReposModel{

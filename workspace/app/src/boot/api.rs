@@ -21,7 +21,7 @@ pub async fn run() -> anyhow::Result<()>{
             .app_data(web::Data::new(redis.clone()))
             .app_data(web::Data::new(service.clone()))
             .app_data(web::Data::new(start))
-            // .wrap(Logger::default())
+            .wrap(Logger::default())
             .wrap(
                 SessionMiddleware::builder(
                     session.clone(),

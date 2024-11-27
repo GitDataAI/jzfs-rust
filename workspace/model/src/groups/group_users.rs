@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use rbatis::crud;
 use rbatis::rbdc::JsonV;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use crate::groups::group_users_access::GroupUsersAccess;
 
 

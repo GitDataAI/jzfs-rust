@@ -1,4 +1,4 @@
-use uuid::Uuid;
+use rbatis::rbdc::Uuid;
 use model::users::users::UsersModel;
 use crate::service::user::UserService;
 
