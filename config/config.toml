@@ -1,0 +1,25 @@
+[db]
+driver = "postgres"
+host = "47.236.139.99"
+port = "6444"
+user = "postgres"
+password = "D8Sl659hBP"
+database = "gitdata"
+
+[http]
+port = "80"
+host = "0.0.0.0"
+worker = 32
+
+[redis]
+host = "221.128.225.26"
+port = "6379"
+password = ""
+db = "0"
+
+[email]
+smtp = "smtp.exmail.qq.com"
+port = 465
+username = "gitdata-bot@gitdata.ai"
+password = "GsMKT8AP5xf6RUGq"
+from = "gitdata-bot@gitdata.ai"
