@@ -8,5 +8,6 @@ COPY  target/release/ControlPlane ./
 RUN mkdir "config"
 COPY config/config.toml ./config/
 
-EXPOSE 80, 2222
+EXPOSE 80
+EXPOSE 2222
 CMD ["/app/ControlPlane"]
