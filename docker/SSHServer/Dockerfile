@@ -6,6 +6,6 @@ RUN apt-get update \
 WORKDIR /app
 COPY  target/release/SSHServer ./
 COPY config.yaml .
-
+COPY ed25519 .
 EXPOSE 2222
 CMD ["/app/SSHServer"]
