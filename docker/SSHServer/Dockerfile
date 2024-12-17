@@ -7,5 +7,5 @@ WORKDIR /app
 COPY  target/release/SSHServer ./
 COPY config.yaml .
 COPY ed25519 .
-EXPOSE 2222
+EXPOSE 22
 CMD ["/app/SSHServer"]
