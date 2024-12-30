@@ -6,10 +6,10 @@ http:
   key: null
   server: actix
 postgres:
-  host: 192.168.23.129
-  port: '5432'
+  host: 47.236.139.99
+  port: '6444'
   user: postgres
-  password: 123456
+  password: D8Sl659hBP
   dbname: gitdata
   schema: public
   pool_size: 10
@@ -18,10 +18,10 @@ postgres:
   idle_timeout: 60
   connect_timeout: 10
   max_connections: 20
-  min_connections: 10
-  log_level: info
+  min_connections: 5
+  log_level: debug
 redis:
-  host: 192.168.23.129
+  host: 122.11.28.208
   port: 6379
   password: null
   db: 0
