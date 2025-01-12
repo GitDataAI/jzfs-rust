@@ -9,7 +9,16 @@ path = "libs/lib.rs"
 
 [workspace]
 members = [
-    "gits",
-    "apis",
+    "gitdata-gits",
+    "gitdata-apis",
 ]
 resolver = "2"
+
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_yaml = { version = "0.9", features = [] }
+env_logger = { version = "0.11", features = ["auto-color"] }
+dotenv = { version = "0.15", features = ["cli"] }
+log = { version = "0.4.22", features = ["serde"] }
+env_home = { version = "0.1.0", features = [] }
