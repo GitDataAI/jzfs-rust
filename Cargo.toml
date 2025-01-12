@@ -1,0 +1,15 @@
+[package]
+name = "gitdata"
+version = "0.1.0"
+edition = "2024"
+
+
+[lib]
+path = "libs/lib.rs"
+
+[workspace]
+members = [
+    "gits",
+    "apis",
+]
+resolver = "2"
