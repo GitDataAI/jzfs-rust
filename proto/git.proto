@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package git;
+
+enum RepositoryAccess {
+    NONE = 0;
+    READ = 1;
+    WRITE = 2;
+    ADMIN = 3;
+}
+
+enum RepositoryStoragePositionType {
+    LOCAL = 0;
+    S3 = 1;
+    NFS = 2;
+}
+
+message RepositoryStoragePosition {
+    RepositoryStoragePositionType type = 1;
+    string path = 2;
+    string node = 3;
+}
+
+service RepRepository {
+    rpc Path(PathRequest) returns (RepositoryStoragePosition) {}
+    rpc Token(TokenRequest) returns (RepositoryAccessMessage) {}
+    rpc Publickey(PublickeyRequest) returns (RepositoryAccessMessage) {}
+}
+
+message RepositoryAccessMessage {
+    RepositoryAccess access = 1;
+}
+
+
+message PathRequest {
+    string owner = 1;
+    string repo = 2;
+}
+
+message TokenRequest {
+    string owner = 1;
+    string repo = 2;
+    string token = 3;
+}
+
+message PublickeyRequest {
+    string owner = 1;
+    string repo = 2;
+    string publickey = 3;
+}

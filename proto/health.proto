@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package health;
+
+
+service Health {
+  rpc Check(HealthCheckRequest) returns (HealthConfig);
+}
+
+
+message HealthCheckRequest {
+  string service = 1;
+}
+
+message HealthConfig {
+  repeated HealthCpu cpu = 1;
+  HealthMemory memory = 2;
+}
+
+message HealthCpu {
+  string name = 1;
+  float usage = 2;
+  uint64 frequency = 3;
+  string brand = 4;
+  string vendor_id = 5;
+}
+
+message HealthMemory {
+  uint64 available_memory = 1;
+  uint64 free_memory = 2;
+  uint64 total_memory = 3;
+}
+
