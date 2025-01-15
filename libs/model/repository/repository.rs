@@ -25,9 +25,10 @@ pub struct Model {
     pub template: bool,
     pub mirrors: bool,
     pub archive: bool,
-    pub archive_time: Option<chrono::NaiveDateTime>,
+    pub archive_time: Option<i64>,
     pub ssh_path: String,
     pub http_path: String,
+    pub storage_node: String,
     pub fork: bool,
     pub fork_uid: Option<Uuid>,
     pub nums_star: i64,
@@ -38,11 +39,20 @@ pub struct Model {
     pub nums_commit: i64,
     pub head: String,
     pub license: Vec<String>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: i64,
+    pub updated_at: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Entity {
+    pub fn find_by_owner(owner_uid: Uuid) -> Select<Entity> {
+        Entity::find().filter(Column::OwnerUid.eq(owner_uid))
+    }
+    pub fn find_by_uid(uid: Uuid) -> Select<Entity> {
+        Entity::find().filter(Column::Uid.eq(uid))
+    }
+}

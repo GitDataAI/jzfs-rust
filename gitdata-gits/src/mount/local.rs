@@ -1,7 +1,11 @@
 use std::io;
-use std::io::{Cursor, Error, Read, Write};
+use std::io::Cursor;
+use std::io::Error;
+use std::io::Read;
+use std::io::Write;
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
+use std::process::Command;
+use std::process::Stdio;
 
 use actix_files::NamedFile;
 use async_fn_stream::fn_stream;
@@ -13,15 +17,15 @@ use crate::service::GitServiceType;
 
 #[derive(Clone)]
 pub struct LocalStorage {
-    pub root: PathBuf,
+    pub root : PathBuf,
 }
 
 impl LocalStorage {
     pub(crate) async fn refs(
         &self,
-        path: &str,
-        service: GitServiceType,
-        version: Option<&str>,
+        path : &str,
+        service : GitServiceType,
+        version : Option<&str>,
     ) -> io::Result<String> {
         let mut cmd = Command::new("git");
         cmd.arg(service.to_string());
@@ -49,7 +53,7 @@ impl LocalStorage {
         }
         Ok(String::from_utf8(output.stdout).unwrap_or("".to_string()))
     }
-    pub(crate) async fn text(&self, path: &str, file_path: &str) -> io::Result<NamedFile> {
+    pub(crate) async fn text(&self, path : &str, file_path : &str) -> io::Result<NamedFile> {
         let file_path = self.root.join(path).join(file_path);
         if !file_path.exists() {
             return Err(io::Error::new(io::ErrorKind::NotFound, "File not found"));
@@ -61,11 +65,11 @@ impl LocalStorage {
     }
     pub(crate) async fn pack(
         &self,
-        path: String,
-        service: GitServiceType,
-        version: Option<String>,
-        gzip: bool,
-        payload: Bytes,
+        path : String,
+        service : GitServiceType,
+        version : Option<String>,
+        gzip : bool,
+        payload : Bytes,
     ) -> io::Result<impl Stream<Item = Result<Bytes, Error>> + use<>> {
         let mut cmd = Command::new("git");
         cmd.arg(service.to_string());
@@ -130,9 +134,9 @@ impl LocalStorage {
     }
     pub async fn pack_ssh(
         &self,
-        path: String,
-        service: GitServiceType,
-        version: Option<String>,
+        path : String,
+        service : GitServiceType,
+        version : Option<String>,
     ) -> io::Result<(
         tokio::process::ChildStdin,
         (tokio::process::ChildStdout, tokio::process::ChildStderr),

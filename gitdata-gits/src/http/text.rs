@@ -1,16 +1,20 @@
+use actix_web::HttpRequest;
+use actix_web::HttpResponse;
+use actix_web::Responder;
 use actix_web::http::header;
-use actix_web::http::header::{HeaderName, HeaderValue};
-use actix_web::{HttpRequest, HttpResponse, Responder, web};
+use actix_web::http::header::HeaderName;
+use actix_web::http::header::HeaderValue;
+use actix_web::web;
 
-use crate::mount::{StoragePool, StorageSingleton};
-use crate::rpc::RepRepository;
-use crate::rpc::repository::RepositoryRpc;
+use crate::mount::StoragePool;
+use crate::mount::StorageSingleton;
+use crate::rpc::git_core::RepositoryRpc;
 
 pub(crate) async fn text(
-    request: HttpRequest,
-    path: web::Path<(String, String)>,
-    rpc: web::Data<RepositoryRpc>,
-    storage: web::Data<StoragePool>,
+    request : HttpRequest,
+    path : web::Path<(String, String)>,
+    rpc : web::Data<RepositoryRpc>,
+    storage : web::Data<StoragePool>,
 ) -> impl Responder {
     let (owner, path) = path.into_inner();
     let nodepath = if let Ok(repo) = rpc.path(owner.clone(), path.clone()).await {

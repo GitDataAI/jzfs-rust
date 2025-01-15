@@ -12,6 +12,7 @@ members = [
     "gitdata-gits",
     "gitdata-apis",
     "gitdata-nfs",
+    "gitdata-proxy", "gitdata-health",
 ]
 resolver = "2"
 
@@ -28,12 +29,28 @@ async-fn-stream = { version = "0.2.2", features = [] }
 prost = "0.13.4"
 async-trait = "0.1.56"
 tonic = { version = "0.12.3" , features = ["prost","server","channel","codegen","transport","default"] }
-tokio = "1.43.0"
-pin-project = "1.1.8"
+tokio = "1"
+pin-project = "1"
 http-body = "1.0.1"
 sea-orm = { version = "1", features = ["sqlx-all", "runtime-tokio"] }
 uuid = { version = "1.11.0", features = ["serde","v4"] }
 chrono = { version = "0.4.39", features = ["clock","std","serde"] }
-serde_json = "1.0.135"
+serde_json = "1"
+tracing = { version = "0.1.41", features = ["attributes"] }
+tracing-subscriber =  { version = "0.3.19", features = ["env-filter"] }
+opentelemetry = { version = "0.27.1", features = ["tracing"] }
+tracing-opentelemetry = { version = "0.28.0", features = ["metrics"] }
+tracing-log = { version = "0.2.0", features = ["default"] }
+tracing-bunyan-formatter = { version = "0.3.10", features = ["default"] }
+tracing-appender = { version = "0.2.3", features = ["parking_lot"] }
+opentelemetry-otlp = { version = "0.27.0", features = [
+    "trace",
+    "metrics",
+    "grpc-tonic",
+] }
+opentelemetry_sdk = { version = "0.27.1", features = ["rt-tokio"] }
+actix-settings = { version = "0.8.0", features = [] }
+anyhow = "1.0.95"
+toml = "0.8.19"
 [build-dependencies]
 tonic-build = { version = "0.12.3", features = ["prost-build"] }

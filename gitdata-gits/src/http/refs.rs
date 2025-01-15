@@ -1,20 +1,23 @@
 use std::collections::HashMap;
 
+use actix_web::HttpRequest;
+use actix_web::HttpResponse;
+use actix_web::HttpResponseBuilder;
+use actix_web::Responder;
 use actix_web::http::StatusCode;
 use actix_web::http::header::HeaderValue;
-use actix_web::{HttpRequest, HttpResponse, HttpResponseBuilder, Responder, web};
+use actix_web::web;
 
 use crate::mount::StoragePool;
-use crate::rpc::RepRepository;
-use crate::rpc::repository::RepositoryRpc;
+use crate::rpc::git_core::RepositoryRpc;
 use crate::service::GitServiceType;
 
 pub async fn info_refs(
-    req: HttpRequest,
-    path: web::Path<(String, String)>,
-    query: web::Query<HashMap<String, String>>,
-    rpc: web::Data<RepositoryRpc>,
-    storage: web::Data<StoragePool>,
+    req : HttpRequest,
+    path : web::Path<(String, String)>,
+    query : web::Query<HashMap<String, String>>,
+    rpc : web::Data<RepositoryRpc>,
+    storage : web::Data<StoragePool>,
 ) -> impl Responder {
     let (owner, repo_name) = path.into_inner();
     let repo_name = repo_name.replace(".git", "");

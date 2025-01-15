@@ -12,7 +12,7 @@ impl GitServiceType {
             GitServiceType::UploadArchive => "upload-archive".to_string(),
         }
     }
-    pub fn from_string(s: &str) -> Option<GitServiceType> {
+    pub fn from_string(s : &str) -> Option<GitServiceType> {
         if s.is_empty() {
             return None;
         }

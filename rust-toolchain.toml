@@ -1,2 +1,4 @@
+#! ensure use toolchain
+
 [toolchain]
 channel = "nightly-2025-01-11"

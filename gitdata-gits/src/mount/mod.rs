@@ -17,51 +17,39 @@ pub mod local;
 pub mod nfs;
 pub mod s3;
 
-#[async_trait]
-pub trait GitStorage: Send + Sync + 'static {
-    async fn refs(
-        &self,
-        path: &str,
-        service: GitServiceType,
-        version: Option<&str>,
-    ) -> io::Result<String>;
-    async fn text(&self, path: &str, file_path: &str) -> io::Result<NamedFile>;
-    async fn pack(
-        &self,
-        path: String,
-        service: GitServiceType,
-        version: Option<String>,
-        gzip: bool,
-        payload: Bytes,
-    ) -> io::Result<impl Stream<Item = Result<Bytes, Error>>>;
+#[derive(Clone)]
+pub struct StoragePool {
+    s3 : HashMap<String, S3Storage>,
+    local : HashMap<String, LocalStorage>,
+    nfs : HashMap<String, NfsStorage>,
 }
 
-pub struct StoragePool {
-    s3: HashMap<String, S3Storage>,
-    local: HashMap<String, LocalStorage>,
-    nfs: HashMap<String, NfsStorage>,
+impl Default for StoragePool {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl StoragePool {
     pub fn new() -> Self {
         StoragePool {
-            s3: HashMap::new(),
-            local: HashMap::new(),
-            nfs: HashMap::new(),
+            s3 : HashMap::new(),
+            local : HashMap::new(),
+            nfs : HashMap::new(),
         }
     }
 
-    pub fn add_s3(&mut self, name: String, storage: S3Storage) {
+    pub fn add_s3(&mut self, name : String, storage : S3Storage) {
         self.s3.insert(name, storage);
     }
 
-    pub fn add_local(&mut self, name: String, storage: LocalStorage) {
+    pub fn add_local(&mut self, name : String, storage : LocalStorage) {
         self.local.insert(name, storage);
     }
-    pub fn add_nfs(&mut self, name: String, storage: NfsStorage) {
+    pub fn add_nfs(&mut self, name : String, storage : NfsStorage) {
         self.nfs.insert(name, storage);
     }
-    pub fn get(&self, node: RepositoryStoragePosition) -> Option<StorageSingleton> {
+    pub fn get(&self, node : RepositoryStoragePosition) -> Option<StorageSingleton> {
         match node {
             RepositoryStoragePosition::S3(x) => {
                 if let Some(storage) = self.s3.get(&x.node) {
@@ -93,9 +81,9 @@ pub enum StorageSingleton {
 impl StorageSingleton {
     pub async fn refs(
         &self,
-        path: &str,
-        service: GitServiceType,
-        version: Option<&str>,
+        path : &str,
+        service : GitServiceType,
+        version : Option<&str>,
     ) -> io::Result<String> {
         match self {
             StorageSingleton::S3(x) => x.refs(path, service, version).await,
@@ -104,7 +92,7 @@ impl StorageSingleton {
         }
     }
 
-    pub async fn text(&self, path: &str, file_path: &str) -> io::Result<NamedFile> {
+    pub async fn text(&self, path : &str, file_path : &str) -> io::Result<NamedFile> {
         match self {
             StorageSingleton::S3(x) => x.text(path, file_path).await,
             StorageSingleton::Local(x) => x.text(path, file_path).await,

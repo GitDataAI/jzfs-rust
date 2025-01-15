@@ -4,7 +4,9 @@ use dotenv::dotenv;
 use env_home::env_home_dir;
 use log::{error, info};
 pub mod api;
+pub mod database;
 pub mod git;
+pub mod rpc;
 pub struct GitDataConfig {}
 
 impl GitDataConfig {

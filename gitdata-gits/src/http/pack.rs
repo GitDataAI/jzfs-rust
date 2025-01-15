@@ -1,23 +1,26 @@
 use std::sync::RwLock;
 
+use actix_web::HttpRequest;
+use actix_web::HttpResponseBuilder;
+use actix_web::Responder;
 use actix_web::http::StatusCode;
 use actix_web::http::header::CONTENT_ENCODING;
+use actix_web::web;
 use actix_web::web::Payload;
-use actix_web::{HttpRequest, HttpResponseBuilder, Responder, web};
 use bytes::Bytes;
 use futures::StreamExt;
 
-use crate::mount::{StoragePool, StorageSingleton};
-use crate::rpc::RepRepository;
-use crate::rpc::repository::RepositoryRpc;
+use crate::mount::StoragePool;
+use crate::mount::StorageSingleton;
+use crate::rpc::git_core::RepositoryRpc;
 use crate::service::GitServiceType;
 
 pub async fn pack(
-    request: HttpRequest,
-    path: web::Path<(String, String)>,
-    mut payload: Payload,
-    rpc: web::Data<RepositoryRpc>,
-    storage: web::Data<RwLock<StoragePool>>,
+    request : HttpRequest,
+    path : web::Path<(String, String)>,
+    mut payload : Payload,
+    rpc : web::Data<RepositoryRpc>,
+    storage : web::Data<RwLock<StoragePool>>,
 ) -> impl Responder {
     let (owner, repo_name) = path.into_inner();
     let repo_name = repo_name.replace(".git", "");

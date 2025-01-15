@@ -7,6 +7,7 @@
  *  * (Licensed_GSALv1) or the Server Side Public License v1 (Licensed_SSPLv1).
  *
  */
+use chrono::Utc;
 use sea_orm::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -22,8 +23,8 @@ pub struct Model {
     pub name: String,
     pub description: Option<String>,
     pub ssh_key: String,
-    pub created_at: chrono::DateTime<chrono::Utc>,
-    pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub created_at: i64,
+    pub updated_at: i64,
 }
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
@@ -41,5 +42,25 @@ impl Entity {
 impl Model {
     pub async fn user(&self, db: &DatabaseConnection) -> Result<Option<users::Model>, DbErr> {
         users::Entity::find_by_id(self.user_uid).one(db).await
+    }
+}
+
+impl ActiveModel {
+    pub fn new_ssh_key(
+        user_uid: Uuid,
+        name: String,
+        description: Option<String>,
+        ssh_key: String,
+    ) -> Self {
+        let now = Utc::now().timestamp();
+        Self {
+            uid: Set(Uuid::new_v4()),
+            user_uid: Set(user_uid),
+            name: Set(name),
+            description: Set(description),
+            ssh_key: Set(ssh_key),
+            created_at: Set(now),
+            updated_at: Set(now),
+        }
     }
 }

@@ -1,24 +1,9 @@
-pub mod repository;
+pub mod core_git;
+pub mod git_core;
+
 use std::io;
 
 use async_trait::async_trait;
-
-#[async_trait]
-pub trait RepRepository: Send + Sync + 'static {
-    async fn path(&self, owner: String, repo: String) -> io::Result<RepositoryStoragePosition>;
-    async fn token(
-        &self,
-        owner: String,
-        repo: String,
-        token: String,
-    ) -> io::Result<RepositoryAccess>;
-    async fn publickey(
-        &self,
-        owner: String,
-        repo: String,
-        publickey: String,
-    ) -> io::Result<RepositoryAccess>;
-}
 
 pub enum RepositoryAccess {
     None,
@@ -45,6 +30,6 @@ impl RepositoryStoragePosition {
 
 #[derive(Clone, Debug)]
 pub struct NodePath {
-    pub path: String,
-    pub node: String,
+    pub path : String,
+    pub node : String,
 }
