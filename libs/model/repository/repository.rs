@@ -11,6 +11,7 @@
 use sea_orm::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use crate::config::git::GitConfig;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
 #[sea_orm(table_name = "repository")]
@@ -54,5 +55,49 @@ impl Entity {
     }
     pub fn find_by_uid(uid: Uuid) -> Select<Entity> {
         Entity::find().filter(Column::Uid.eq(uid))
+    }
+    pub fn find_by_name(name: String) -> Select<Entity> {
+        Entity::find().filter(Column::Name.eq(name))
+    }
+}
+
+
+impl ActiveModel {
+    pub fn new(
+        name: String,
+        owner_uid: Uuid,
+        description: Option<String>,
+        visible: bool,
+        default_branch: Option<String>,
+        node: String,
+    ) -> Self {
+        let git_config = GitConfig::get();
+        Self {
+            uid: Set(Uuid::new_v4()),
+            name: Set(name.clone()),
+            owner_uid: Set(owner_uid),
+            description: Set(description),
+            visible: Set(visible),
+            default_branch: Set(default_branch.unwrap_or("".to_string())),
+            template: Set(false),
+            mirrors: Set(false),
+            archive: Set(false),
+            archive_time: Set(None),
+            ssh_path: Set(format!("{}:{}/{}", git_config.ssh, owner_uid, name)),
+            http_path: Set(format!("{}/{}/{}", git_config.http, owner_uid, name)),
+            storage_node: Set(node),
+            fork: Set(false),
+            fork_uid: Set(None),
+            nums_star: Set(0),
+            nums_fork: Set(0),
+            nums_watch: Set(0),
+            nums_issue: Set(0),
+            nums_pull: Set(0),
+            nums_commit: Set(0),
+            head: Set("".parse().unwrap()),
+            license: Set(vec![]),
+            created_at: Set(chrono::Utc::now().timestamp()),
+            updated_at: Set(chrono::Utc::now().timestamp()),
+        }
     }
 }

@@ -36,7 +36,7 @@ pub struct Model {
     pub topic: Vec<String>,
     pub pinned: Vec<Uuid>,
 
-    pub repository_limit: u64, // default 20
+    pub repository_limit: i32, // default 20
 
     pub created_at: i64,
     pub updated_at: i64,

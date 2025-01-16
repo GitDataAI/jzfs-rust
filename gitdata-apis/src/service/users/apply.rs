@@ -4,6 +4,7 @@ use sea_orm::Set;
 use sea_orm::prelude::Uuid;
 use serde::Deserialize;
 use serde::Serialize;
+use sha256::Sha256Digest;
 
 use crate::service::AppState;
 
@@ -61,7 +62,8 @@ impl AppState {
             }
             _ => {}
         };
-        let mut model = users::ActiveModel::new_users(param.username, param.email, param.passwd);
+        let mut model =
+            users::ActiveModel::new_users(param.username, param.email, param.passwd.digest());
         model.state = Set("Active".to_string());
         loop {
             match self

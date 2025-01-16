@@ -8,13 +8,5 @@
  *
  */
 
-pub mod comments;
-pub mod events;
-pub mod issues;
-pub mod labels;
-pub mod milestones;
-pub mod pr;
-pub mod reactions;
-pub mod repository;
-pub mod users;
-pub mod migrate;
+pub const CAPTCHA : &str = include_str!("captcha.html");
+pub const USER_FOR_GET_PASSWD : &str = include_str!("users_forgetpasswd.html");

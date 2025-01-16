@@ -5,7 +5,7 @@ use sha256::Sha256Digest;
 use crate::service::AppState;
 use crate::service::users::info::UsersInfoReplay;
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct UsersAuthPasswdParam {
     pub username : String,
     pub password : String,

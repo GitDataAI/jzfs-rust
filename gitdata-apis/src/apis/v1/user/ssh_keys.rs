@@ -33,7 +33,7 @@ pub async fn api_v1_user_ssh_key_create(
 /// /api/v1/user/ssh DELETE
 pub async fn api_v1_user_ssh_key_delete(
     session : Session,
-    param : web::Json<SshKeyDeleteParam>,
+    param : web::Query<SshKeyDeleteParam>,
     app_state : web::Data<crate::service::AppState>,
 ) -> impl Responder {
     let ident = match UsersInfoReplay::from_session(session) {

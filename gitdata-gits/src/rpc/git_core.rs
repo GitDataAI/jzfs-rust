@@ -1,12 +1,10 @@
 use std::sync::Arc;
 
+use crate::rpc::NodePath;
 use futures::io;
 use gitdata::rpc::git_core;
-use gitdata::rpc::git_core::Repository;
+use gitdata::rpc::git_core::AccessResponse;
 use tokio::sync::Mutex;
-
-use crate::rpc::NodePath;
-use crate::rpc::RepositoryStoragePosition;
 
 #[derive(Clone)]
 pub struct RepositoryRpc {
@@ -15,32 +13,17 @@ pub struct RepositoryRpc {
 }
 
 impl RepositoryRpc {
-    pub async fn path(
-        &self,
-        owner : String,
-        repo : String,
-    ) -> io::Result<RepositoryStoragePosition> {
+    pub async fn path(&self, owner : String, repo : String) -> io::Result<NodePath> {
         let mut client = self.client.lock().await;
-        let result = match client.path(git_core::PathRequest { owner, repo }).await {
-            Ok(x) => x.into_inner(),
-            Err(e) => {
-                return Err(io::Error::new(io::ErrorKind::Other, e));
+        match client.path(git_core::PathRequest { owner, repo }).await {
+            Ok(x) => {
+                let x = x.into_inner();
+                Ok(NodePath {
+                    node : x.node,
+                    path : x.path,
+                })
             }
-        };
-        match result.r#type {
-            0 => Ok(RepositoryStoragePosition::Local(NodePath {
-                path : result.path,
-                node : result.node,
-            })),
-            1 => Ok(RepositoryStoragePosition::S3(NodePath {
-                path : result.path,
-                node : result.node,
-            })),
-            2 => Ok(RepositoryStoragePosition::Nfs(NodePath {
-                path : result.path,
-                node : result.node,
-            })),
-            _ => Err(io::Error::new(io::ErrorKind::Other, "unknown type")),
+            Err(e) => Err(io::Error::new(io::ErrorKind::Other, e)),
         }
     }
 
@@ -49,13 +32,13 @@ impl RepositoryRpc {
         owner : String,
         repo : String,
         token : String,
-    ) -> io::Result<Vec<Repository>> {
+    ) -> io::Result<AccessResponse> {
         let mut client = self.client.lock().await;
         match client
             .token(git_core::TokenRequest { owner, repo, token })
             .await
         {
-            Ok(x) => Ok(x.into_inner().repositories),
+            Ok(x) => Ok(x.into_inner()),
             Err(e) => Err(io::Error::new(io::ErrorKind::Other, e)),
         }
     }
@@ -65,7 +48,7 @@ impl RepositoryRpc {
         owner : String,
         repo : String,
         publickey : String,
-    ) -> io::Result<Vec<Repository>> {
+    ) -> io::Result<AccessResponse> {
         let mut client = self.client.lock().await;
         match client
             .publickey(git_core::PublickeyRequest {
@@ -75,7 +58,7 @@ impl RepositoryRpc {
             })
             .await
         {
-            Ok(x) => Ok(x.into_inner().repositories),
+            Ok(x) => Ok(x.into_inner()),
             Err(e) => Err(io::Error::new(io::ErrorKind::Other, e)),
         }
     }

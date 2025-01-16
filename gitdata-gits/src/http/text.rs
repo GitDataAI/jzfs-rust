@@ -7,7 +7,6 @@ use actix_web::http::header::HeaderValue;
 use actix_web::web;
 
 use crate::mount::StoragePool;
-use crate::mount::StorageSingleton;
 use crate::rpc::git_core::RepositoryRpc;
 
 pub(crate) async fn text(
@@ -26,19 +25,15 @@ pub(crate) async fn text(
         .uri()
         .to_string()
         .replace(&format!("{}/{}", owner, path), "");
-    let storage = match match storage.get(nodepath.clone()) {
+    let storage = match storage.node.get(&nodepath.node) {
         Some(storage) => storage,
         None => return HttpResponse::NotFound().finish(),
-    } {
-        StorageSingleton::S3(x) => x.text(&nodepath.path(), &file_path).await,
-        StorageSingleton::Local(x) => x.text(&nodepath.path(), &file_path).await,
-        StorageSingleton::Nfs(x) => x.text(&nodepath.path(), &file_path).await,
     };
-    if storage.is_err() {
-        return HttpResponse::NotFound().finish();
-    }
-    let storage = storage.unwrap();
-    let namedfile = storage.use_last_modified(true);
+    let namedfile = match storage.text(&*nodepath.path, &*file_path).await {
+        Ok(namedfile) => namedfile,
+        Err(_) => return HttpResponse::NotFound().finish(),
+    };
+    let namedfile = namedfile.use_last_modified(true);
     let mut response = namedfile.into_response(&request);
     response.headers_mut().insert(
         HeaderName::try_from("Pragma".to_string()).unwrap(),

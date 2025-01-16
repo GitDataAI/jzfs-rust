@@ -40,10 +40,9 @@ impl AppState {
             "gitdata-bot@gitdata.ai".parse()?,
             "gitdata-bot@gitdata.ai".parse()?,
             email,
-            EmailType::RegistrationVerificationCode
-                .to_email()
-                .replace("123456", &captcha.to_string()),
+            "GitData 验证码".parse()?,
             EmailType::RegistrationVerificationCode,
+            captcha.to_string(),
         );
         let mut email_jobs = self
             .email_jobs

@@ -1,0 +1,11 @@
+[package]
+name = "gitdata-proxy"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hyper-reverse-proxy = "0.5"
+hyper = { version = "~0.14", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
+
+gitdata = { path = ".."}

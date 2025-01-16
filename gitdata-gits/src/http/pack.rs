@@ -11,7 +11,6 @@ use bytes::Bytes;
 use futures::StreamExt;
 
 use crate::mount::StoragePool;
-use crate::mount::StorageSingleton;
 use crate::rpc::git_core::RepositoryRpc;
 use crate::service::GitServiceType;
 
@@ -66,56 +65,22 @@ pub async fn pack(
     response.append_header(("Transfer-Encoding", "chunked"));
     response.append_header(("X-Content-Type-Options", "nosniff"));
     let storage = storage.read().unwrap();
-    match match storage.get(path.clone()) {
+    let storage = match storage.node.get(&path.node) {
         Some(storage) => storage,
-        None => {
-            return actix_web::HttpResponse::NotFound().finish();
-        }
-    } {
-        StorageSingleton::S3(s) => {
-            match s
-                .pack(
-                    path.path().to_string(),
-                    service,
-                    Some(version.to_string()),
-                    gzip,
-                    bytes,
-                )
-                .await
-            {
-                Ok(bytes) => response.streaming(bytes),
-                Err(_) => actix_web::HttpResponse::NotFound().finish(),
-            }
-        }
-        StorageSingleton::Local(s) => {
-            match s
-                .pack(
-                    path.path().to_string(),
-                    service,
-                    Some(version.to_string()),
-                    gzip,
-                    bytes,
-                )
-                .await
-            {
-                Ok(bytes) => response.streaming(bytes),
-                Err(_) => actix_web::HttpResponse::NotFound().finish(),
-            }
-        }
-        StorageSingleton::Nfs(s) => {
-            match s
-                .pack(
-                    path.path().to_string(),
-                    service,
-                    Some(version.to_string()),
-                    gzip,
-                    bytes,
-                )
-                .await
-            {
-                Ok(bytes) => response.streaming(bytes),
-                Err(_) => actix_web::HttpResponse::NotFound().finish(),
-            }
-        }
-    }
+        None => return actix_web::HttpResponse::NotFound().finish(),
+    };
+    let result = match storage
+        .pack(
+            path.path.clone(),
+            service,
+            Some(version.to_string()),
+            gzip,
+            bytes,
+        )
+        .await
+    {
+        Ok(response) => response,
+        Err(_) => return actix_web::HttpResponse::NotFound().finish(),
+    };
+    response.streaming(result)
 }
