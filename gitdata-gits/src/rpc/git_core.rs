@@ -6,7 +6,6 @@ use gitdata::rpc::git_core::Repository;
 use tokio::sync::Mutex;
 
 use crate::rpc::NodePath;
-use crate::rpc::RepositoryStoragePosition;
 
 #[derive(Clone)]
 pub struct RepositoryRpc {
@@ -15,32 +14,17 @@ pub struct RepositoryRpc {
 }
 
 impl RepositoryRpc {
-    pub async fn path(
-        &self,
-        owner : String,
-        repo : String,
-    ) -> io::Result<RepositoryStoragePosition> {
+    pub async fn path(&self, owner : String, repo : String) -> io::Result<NodePath> {
         let mut client = self.client.lock().await;
-        let result = match client.path(git_core::PathRequest { owner, repo }).await {
-            Ok(x) => x.into_inner(),
-            Err(e) => {
-                return Err(io::Error::new(io::ErrorKind::Other, e));
+        match client.path(git_core::PathRequest { owner, repo }).await {
+            Ok(x) => {
+                let x = x.into_inner();
+                Ok(NodePath {
+                    node : x.node,
+                    path : x.path,
+                })
             }
-        };
-        match result.r#type {
-            0 => Ok(RepositoryStoragePosition::Local(NodePath {
-                path : result.path,
-                node : result.node,
-            })),
-            1 => Ok(RepositoryStoragePosition::S3(NodePath {
-                path : result.path,
-                node : result.node,
-            })),
-            2 => Ok(RepositoryStoragePosition::Nfs(NodePath {
-                path : result.path,
-                node : result.node,
-            })),
-            _ => Err(io::Error::new(io::ErrorKind::Other, "unknown type")),
+            Err(e) => Err(io::Error::new(io::ErrorKind::Other, e)),
         }
     }
 

@@ -4,8 +4,7 @@ use tokio::sync::OnceCell;
 
 pub static RPC_CLIENT : OnceCell<CoreGitRpc> = OnceCell::const_new();
 
-
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct CoreGitRpc {
     pub client : RepRepositoryClient<tonic::transport::Channel>,
 }
@@ -26,7 +25,6 @@ impl CoreGitRpc {
         })
     }
 }
-
 
 #[cfg(test)]
 mod tests {

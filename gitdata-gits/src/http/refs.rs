@@ -44,25 +44,19 @@ pub async fn info_refs(
         .to_str()
         .map(|s| s.to_string())
         .unwrap_or("".to_string());
-    let data = match storage.get(path.clone()) {
-        Some(data) => match data
-            .refs(
-                path.path(),
-                service,
-                if version.is_empty() {
-                    None
-                } else {
-                    Some(&version)
-                },
-            )
-            .await
-        {
-            Ok(data) => data,
-            Err(_) => {
-                return HttpResponse::NotFound().body("Not found");
-            }
-        },
+
+    let storage = match storage.node.get(&path.clone().node) {
+        Some(storage) => storage,
         None => {
+            return HttpResponse::NotFound().body("Not found");
+        }
+    };
+    let data = match storage
+        .refs(&*path.path.clone(), service, Some(&version))
+        .await
+    {
+        Ok(data) => data,
+        Err(_) => {
             return HttpResponse::NotFound().body("Not found");
         }
     };

@@ -11,14 +11,8 @@ enum RepositoryAccess {
     ADMIN = 3;
 }
 
-enum RepositoryStoragePositionType {
-    LOCAL = 0;
-    S3 = 1;
-    NFS = 2;
-}
 
 message RepositoryStoragePosition {
-    RepositoryStoragePositionType type = 1;
     string path = 2;
     string node = 3;
 }

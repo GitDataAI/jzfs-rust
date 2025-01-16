@@ -6,19 +6,11 @@ package core_git;
 
 
 
-enum RepositoryStoragePositionType {
-  LOCAL = 0;
-  S3 = 1;
-  NFS = 2;
-}
+
 
 message RepositoryStoragePosition {
-  RepositoryStoragePositionType type = 1;
   string path = 2;
   string node = 3;
-}
-message RepositoryCreate {
-  RepositoryStoragePosition storage_position = 1;
 }
 
 message RepositoryAddFileRequest {
@@ -36,6 +28,77 @@ message RepositoryAddFilesResponse {
   string code = 1;
 }
 service RepRepository {
-  rpc Create(RepositoryCreate) returns (RepositoryStoragePosition) {}
+  rpc Create(RepositoryStoragePosition) returns (RepositoryStoragePosition) {}
   rpc AddFile(RepositoryAddFileRequest) returns (RepositoryAddFilesResponse) {}
+  rpc SyncBranch(RepositoryStoragePosition) returns (RepositorySyncBranchResponse) {}
+  rpc SyncCommit(RepositoryCommitRequest) returns (RepositorySyncCommitResponse) {}
+  rpc SyncBlob(RepositoryFileRequest) returns (RepositoryFileResponse) {}
+  rpc SyncTags(RepositoryStoragePosition) returns (RepositoryTagsResponse) {}
+}
+
+message RepositorySyncBranchResponse {
+  repeated RepositoryBranch branches = 1;
+}
+message RepositorySyncCommitResponse {
+  repeated RepositoryCommit commits = 1;
+}
+
+message RepositoryBranch {
+  string name = 1;
+  string head = 2;
+  int32 commit_nums = 3;
+  optional string from = 4;
+  optional string to = 5;
+  bool start = 6;
+}
+
+message RepositoryCommit {
+  string hash = 1;
+  string message = 2;
+  string author = 3;
+  string email = 4;
+  string date = 5;
+  string branch = 6;
+  int32 file_nums = 7;
+  repeated RepositoryTree tree = 8;
+}
+
+message RepositoryTree {
+  string hash = 1;
+  string path = 2;
+  string size = 4;
+  string name = 5;
+  string mode = 6;
+}
+
+message RepositoryFileResponse {
+  string hash = 1;
+  string path = 2;
+  string size = 4;
+  string name = 5;
+  string mode = 6;
+  bytes content = 7;
+}
+
+message RepositoryFileRequest {
+    RepositoryStoragePosition position = 1;
+    string path = 2;
+    string hash = 3;
+}
+
+message RepositoryTagsResponse {
+  repeated RepositoryTags tags = 1;
+}
+
+message RepositoryTags {
+  string name = 1;
+  string hash = 2;
+  string date = 3;
+  string author = 4;
+  string email = 5;
+}
+
+message RepositoryCommitRequest {
+  RepositoryStoragePosition position = 1;
+  string branch = 2;
 }

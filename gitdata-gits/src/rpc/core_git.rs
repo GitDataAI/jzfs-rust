@@ -1,16 +1,12 @@
+use std::path::PathBuf;
+
 use async_trait::async_trait;
-use gitdata::rpc;
-use gitdata::rpc::core_git::RepositoryAddFileRequest;
-use gitdata::rpc::core_git::RepositoryAddFilesResponse;
-use gitdata::rpc::core_git::RepositoryCreate;
-use gitdata::rpc::core_git::RepositoryStoragePosition as Pos;
+use gitdata::rpc::core_git::*;
 use tonic::Request;
 use tonic::Response;
 use tonic::Status;
 
 use crate::mount::StoragePool;
-use crate::mount::StorageSingleton;
-use crate::rpc::NodePath;
 
 pub struct CoreGit {
     pub storage : StoragePool,
@@ -23,59 +19,27 @@ impl CoreGit {
 }
 
 #[async_trait]
-impl rpc::core_git::rep_repository_server::RepRepository for CoreGit {
-    async fn create(&self, request : Request<RepositoryCreate>) -> Result<Response<Pos>, Status> {
+impl rep_repository_server::RepRepository for CoreGit {
+    async fn create(
+        &self,
+        request : Request<RepositoryStoragePosition>,
+    ) -> Result<Response<RepositoryStoragePosition>, Status> {
         let request = request.into_inner();
-        let storage_position = match request.storage_position {
-            Some(storage_position) => storage_position,
+        let storage = match self.storage.node.get(&request.node) {
+            Some(storage) => storage,
             None => {
-                return Err(Status::invalid_argument("storage_position is required"));
+                return Err(Status::invalid_argument("node not found"));
             }
         };
-        let node = NodePath {
-            path : storage_position.path.clone(),
-            node : storage_position.node.clone(),
-        };
-        let storge = match storage_position.r#type {
-            0 => StorageSingleton::S3(self.storage.s3.get(&node.node).unwrap().clone()),
-            1 => StorageSingleton::Local(self.storage.local.get(&node.node).unwrap().clone()),
-            2 => StorageSingleton::Nfs(self.storage.nfs.get(&node.node).unwrap().clone()),
-            _ => {
-                return Err(Status::invalid_argument(
-                    "storage_position.r#type is invalid",
-                ));
+        match storage.create_repository(request.path.clone()).await {
+            Ok(_) => {
+                return Ok(Response::new(RepositoryStoragePosition {
+                    node : request.node,
+                    path : request.path,
+                }));
             }
-        };
-        match storge {
-            StorageSingleton::S3(x) => {
-                return match x.create_repository(storage_position.path.clone()).await {
-                    Ok(_) => Ok(Response::new(Pos {
-                        r#type : storage_position.r#type,
-                        path : storage_position.path.clone(),
-                        node : storage_position.node.clone(),
-                    })),
-                    Err(e) => Err(Status::internal(e.to_string())),
-                };
-            }
-            StorageSingleton::Local(x) => {
-                return match x.create_repository(storage_position.path.clone()).await {
-                    Ok(_) => Ok(Response::new(Pos {
-                        r#type : storage_position.r#type,
-                        path : storage_position.path.clone(),
-                        node : storage_position.node.clone(),
-                    })),
-                    Err(e) => Err(Status::internal(e.to_string())),
-                };
-            }
-            StorageSingleton::Nfs(x) => {
-                return match x.create_repository(storage_position.path.clone()).await {
-                    Ok(_) => Ok(Response::new(Pos {
-                        r#type : storage_position.r#type,
-                        path : storage_position.path.clone(),
-                        node : storage_position.node.clone(),
-                    })),
-                    Err(e) => Err(Status::internal(e.to_string())),
-                };
+            Err(e) => {
+                return Err(Status::internal(e.to_string()));
             }
         }
     }
@@ -84,83 +48,143 @@ impl rpc::core_git::rep_repository_server::RepRepository for CoreGit {
         request : Request<RepositoryAddFileRequest>,
     ) -> Result<Response<RepositoryAddFilesResponse>, Status> {
         let request = request.into_inner();
-        let storage_position = match request.repository_storage_position {
-            Some(storage_position) => storage_position,
+        let node = match request.repository_storage_position {
+            Some(node) => node,
             None => {
-                return Err(Status::invalid_argument("storage_position is required"));
+                return Err(Status::invalid_argument("node not found"));
             }
         };
-        let node = NodePath {
-            path : storage_position.path.clone(),
-            node : storage_position.node.clone(),
-        };
-        let storge = match storage_position.r#type {
-            0 => StorageSingleton::S3(self.storage.s3.get(&node.node).unwrap().clone()),
-            1 => StorageSingleton::Local(self.storage.local.get(&node.node).unwrap().clone()),
-            2 => StorageSingleton::Nfs(self.storage.nfs.get(&node.node).unwrap().clone()),
-            _ => {
-                return Err(Status::invalid_argument(
-                    "storage_position.r#type is invalid",
-                ));
+        let storage = match self.storage.node.get(&node.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
             }
         };
-        match storge {
-            StorageSingleton::S3(x) => {
-                match x
-                    .add_file(
-                        storage_position.path.clone(),
-                        request.path.clone(),
-                        request.content.clone(),
-                        request.email.clone(),
-                        request.user.clone(),
-                        request.message.clone(),
-                        request.file_name.clone(),
-                        request.branch.clone(),
-                    )
-                    .await
-                {
-                    Ok(_) => Ok(Response::new(RepositoryAddFilesResponse::default())),
-                    Err(x) => {
-                        return Err(Status::internal(x.to_string()));
-                    }
-                }
+        match storage
+            .add_file(
+                node.path.clone(),
+                request.path.clone(),
+                request.content.clone(),
+                request.email,
+                request.user,
+                request.message,
+                request.file_name,
+                request.branch,
+            )
+            .await
+        {
+            Ok(_) => {
+                return Ok(Response::new(RepositoryAddFilesResponse {
+                    code : "200".to_string(),
+                }));
             }
-            StorageSingleton::Local(x) => {
-                match x
-                    .add_file(
-                        storage_position.path.clone(),
-                        request.path.clone(),
-                        request.content.clone(),
-                        request.email.clone(),
-                        request.user.clone(),
-                        request.message.clone(),
-                        request.file_name.clone(),
-                        request.branch.clone(),
-                    )
-                    .await
-                {
-                    Ok(_) => Ok(Response::new(RepositoryAddFilesResponse::default())),
-                    Err(x) => return Err(Status::internal(x.to_string())),
-                }
+            Err(e) => {
+                return Err(Status::internal(e.to_string()));
             }
-            StorageSingleton::Nfs(x) => {
-                match x
-                    .add_file(
-                        storage_position.path.clone(),
-                        request.path.clone(),
-                        request.content.clone(),
-                        request.email.clone(),
-                        request.user.clone(),
-                        request.message.clone(),
-                        request.file_name.clone(),
-                        request.branch.clone(),
-                    )
-                    .await
-                {
-                    Ok(_) => Ok(Response::new(RepositoryAddFilesResponse::default())),
-                    Err(x) => return Err(Status::internal(x.to_string())),
-                }
+        }
+    }
+    async fn sync_branch(
+        &self,
+        request : tonic::Request<RepositoryStoragePosition>,
+    ) -> std::result::Result<tonic::Response<RepositorySyncBranchResponse>, tonic::Status> {
+        let request = request.into_inner();
+        let storage = match self.storage.node.get(&request.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
             }
+        };
+        match storage.branch(request.path.clone()).await {
+            Ok(x) => {
+                return Ok(Response::new(RepositorySyncBranchResponse { branches : x }));
+            }
+            Err(e) => {
+                return Err(Status::internal(e.to_string()));
+            }
+        }
+    }
+    async fn sync_commit(
+        &self,
+        request : tonic::Request<RepositoryCommitRequest>,
+    ) -> std::result::Result<tonic::Response<RepositorySyncCommitResponse>, tonic::Status> {
+        let request = request.into_inner();
+        let node = match request.position {
+            Some(node) => node,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        let storage = match self.storage.node.get(&node.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        match storage.commit(node.path.clone(), request.branch).await {
+            Ok(x) => {
+                return Ok(Response::new(RepositorySyncCommitResponse { commits : x }));
+            }
+            Err(e) => {
+                return Err(Status::internal(e.to_string()));
+            }
+        }
+    }
+    async fn sync_blob(
+        &self,
+        request : tonic::Request<RepositoryFileRequest>,
+    ) -> std::result::Result<tonic::Response<RepositoryFileResponse>, tonic::Status> {
+        let request = request.into_inner();
+        let node = match request.position {
+            Some(node) => node,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        let storage = match self.storage.node.get(&node.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        match storage
+            .get_file(
+                node.path.clone(),
+                request.path.clone(),
+                request.hash.clone(),
+            )
+            .await
+        {
+            Ok(x) => Ok(Response::new(RepositoryFileResponse {
+                hash : request.hash,
+                path : request.path.clone(),
+                size : x.len().to_string(),
+                name : PathBuf::from(request.path)
+                    .file_name()
+                    .unwrap_or("".as_ref())
+                    .to_str()
+                    .unwrap_or("")
+                    .to_string(),
+                mode : "0".to_string(),
+                content : x,
+            })),
+            Err(e) => Err(Status::internal(e.to_string())),
+        }
+    }
+    async fn sync_tags(
+        &self,
+        request : tonic::Request<RepositoryStoragePosition>,
+    ) -> std::result::Result<tonic::Response<RepositoryTagsResponse>, tonic::Status> {
+        let request = request.into_inner();
+
+        let storage = match self.storage.node.get(&request.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        match storage.tage(request.path.clone()).await {
+            Ok(x) => Ok(Response::new(RepositoryTagsResponse { tags : x })),
+            Err(e) => Err(Status::internal(e.to_string())),
         }
     }
 }
