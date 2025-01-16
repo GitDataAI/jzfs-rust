@@ -4,7 +4,7 @@ use actix_web::HttpMessage;
 use actix_web::HttpRequest;
 use actix_web::Responder;
 use actix_web::web;
-
+use sha256::Sha256Digest;
 use crate::apis::app_writer::AppWrite;
 use crate::service::AppState;
 use crate::service::auth::AuthInner;
@@ -23,6 +23,7 @@ pub async fn api_v1_auth_passwd(
             return AppWrite::fail(err.to_string());
         }
     };
+    dbg!(inner.clone().password.digest());
     match app_state.auth_by_passwd(inner).await {
         Ok(token) => {
             session.insert("token", token.clone()).unwrap();

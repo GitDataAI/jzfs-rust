@@ -7,6 +7,8 @@ pub mod api;
 pub mod database;
 pub mod git;
 pub mod rpc;
+pub mod email;
+
 pub struct GitDataConfig {}
 
 impl GitDataConfig {

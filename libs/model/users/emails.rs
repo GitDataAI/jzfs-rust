@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "email")]
+#[sea_orm(table_name = "emails")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub uid: Uuid,

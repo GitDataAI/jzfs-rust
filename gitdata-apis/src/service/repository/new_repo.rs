@@ -15,7 +15,8 @@ pub struct RepoCreateParam {
 }
 
 impl AppState {
-    pub async fn repository_new(&self) {
+    pub async fn repository_new(&self, param : RepoCreateParam) {
+        
         todo!()
     }
 }

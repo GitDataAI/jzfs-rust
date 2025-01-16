@@ -10,12 +10,13 @@ use apalis_sql::postgres::PostgresStorage;
 use deadpool_redis::Runtime;
 use gitdata::config::database::DatabaseConfig;
 use gitdata::config::database::PgConfig;
-use sea_orm::ConnectOptions;
+use sea_orm::{ConnectOptions};
 use sea_orm::Database;
 use sea_orm::DatabaseConnection;
+use sea_orm_migration::MigratorTrait;
 use tracing::debug;
 use tracing::info;
-
+use gitdata::model::migrate::DatabaseMigrate;
 use crate::jobs::email::EmailJobs;
 use crate::jobs::email::send_email;
 
@@ -44,12 +45,16 @@ impl AppState {
         let active_write = database_conn(config.pg.get("ActiveWrite").unwrap().clone()).await?;
         info!("Connect Deprecated Database Pool");
         let deprecated = database_conn(config.pg.get("Deprecated").unwrap().clone()).await?;
+        let jobs_margin = database_conn(config.pg.get("Jobs").unwrap().clone()).await?;
         info!("Connect Jobs Database Pool");
         let jobs_pool =
             apalis_sql::postgres::PgPool::connect(&*config.pg.get("Jobs").unwrap().format())
                 .await?;
         let mut pg =
             PostgresStorage::new_with_config(jobs_pool.clone(), Config::new("apalis::Email"));
+        let migrator = PostgresStorage::migrations();
+        let mut job_txn = jobs_margin.get_postgres_connection_pool().acquire().await?;
+        migrator.run(&mut job_txn).await?;
         let mut listener = PgListen::new(jobs_pool).await?;
         listener.subscribe_with(&mut pg);
         tokio::spawn(async move {
@@ -98,5 +103,10 @@ async fn database_conn(url : PgConfig) -> anyhow::Result<DatabaseConnection> {
         .sqlx_logging(true)
         .sqlx_logging_level(url.level());
     let db = Database::connect(opt).await?;
+    if url.dbname.to_lowercase() != "jobs".to_string() {
+        DatabaseMigrate::install(&db).await?;
+        DatabaseMigrate::up(&db, None).await?;
+    }
     Ok(db)
 }
+

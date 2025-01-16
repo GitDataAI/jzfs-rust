@@ -18,7 +18,7 @@ pub struct Model {
     pub uid: Uuid,
     pub user_uid: Uuid,
     pub repository_uid: Uuid,
-    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub created_at: i64,
 }
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}

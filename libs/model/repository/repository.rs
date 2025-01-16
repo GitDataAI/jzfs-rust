@@ -56,3 +56,42 @@ impl Entity {
         Entity::find().filter(Column::Uid.eq(uid))
     }
 }
+
+
+impl ActiveModel {
+    pub fn new(
+        name: String,
+        owner_uid: Uuid,
+        description: Option<String>,
+        visible: bool,
+        default_branch: Option<String>,
+    ) -> Self {
+        Self {
+            uid: Set(Uuid::new_v4()),
+            name: Set(name.clone()),
+            owner_uid: Set(owner_uid),
+            description: Set(description),
+            visible: Set(visible),
+            default_branch: Set(default_branch.unwrap_or("".to_string())),
+            template: Set(false),
+            mirrors: Set(false),
+            archive: Set(false),
+            archive_time: Set(None),
+            ssh_path: Set(format!("git@gitdata.ai:{}/{}", owner_uid, name)),
+            http_path: Set(format!("https://gitdata.ai/{}/{}", owner_uid, name)),
+            storage_node: Set("".to_string()),
+            fork: Set(false),
+            fork_uid: Set(None),
+            nums_star: Set(0),
+            nums_fork: Set(0),
+            nums_watch: Set(0),
+            nums_issue: Set(0),
+            nums_pull: Set(0),
+            nums_commit: Set(0),
+            head: Set("".parse().unwrap()),
+            license: Set(vec![]),
+            created_at: Set(chrono::Utc::now().timestamp()),
+            updated_at: Set(chrono::Utc::now().timestamp()),
+        }
+    }
+}
