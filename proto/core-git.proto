@@ -21,6 +21,21 @@ message RepositoryCreate {
   RepositoryStoragePosition storage_position = 1;
 }
 
+message RepositoryAddFileRequest {
+  RepositoryStoragePosition RepositoryStoragePosition = 1;
+  string path = 2;
+  bytes content = 3;
+  string email = 4;
+  string user = 5;
+  string message = 6;
+  string file_name = 7;
+  string branch = 8;
+}
+
+message RepositoryAddFilesResponse {
+  string code = 1;
+}
 service RepRepository {
   rpc Create(RepositoryCreate) returns (RepositoryStoragePosition) {}
+  rpc AddFile(RepositoryAddFileRequest) returns (RepositoryAddFilesResponse) {}
 }

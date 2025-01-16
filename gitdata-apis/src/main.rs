@@ -1,15 +1,17 @@
-use actix_session::config::{CookieContentSecurity, PersistentSession, TtlExtensionPolicy};
 use actix_session::SessionMiddleware;
+use actix_session::config::CookieContentSecurity;
+use actix_session::config::PersistentSession;
+use actix_session::config::TtlExtensionPolicy;
 use actix_session::storage::RedisSessionStore;
 use actix_settings::ApplySettings;
 use actix_web::App;
+use actix_web::HttpServer;
 use actix_web::cookie::Key;
 use actix_web::cookie::time::Duration;
-use actix_web::HttpServer;
 use actix_web::web;
+use gitdata_apis::apis::app_router::AppRouter;
 use gitdata_apis::service::AppState;
 use tracing::info;
-use gitdata_apis::apis::app_router::AppRouter;
 
 const CONFIG_FILE : &str = "./config/api.toml";
 #[tokio::main]
@@ -29,7 +31,7 @@ async fn main() -> anyhow::Result<()> {
         .await?;
     info!("Redis session store initialized.");
     info!("API server started.");
-    HttpServer::new(move || 
+    HttpServer::new(move || {
         App::new()
             .wrap(actix_identity::IdentityMiddleware::default())
             .wrap(
@@ -49,11 +51,11 @@ async fn main() -> anyhow::Result<()> {
             .wrap(actix_web::middleware::Logger::default())
             .app_data(web::Data::new(state.clone()))
             .configure(AppRouter)
-    )
-        .try_apply_settings(&api_config)
-        .expect("Failed to apply settings")
-        .run()
-        .await
-        .expect("Failed to start server");
+    })
+    .try_apply_settings(&api_config)
+    .expect("Failed to apply settings")
+    .run()
+    .await
+    .expect("Failed to start server");
     Ok(())
 }

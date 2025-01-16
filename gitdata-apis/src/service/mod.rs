@@ -10,13 +10,14 @@ use apalis_sql::postgres::PostgresStorage;
 use deadpool_redis::Runtime;
 use gitdata::config::database::DatabaseConfig;
 use gitdata::config::database::PgConfig;
-use sea_orm::{ConnectOptions};
+use gitdata::model::migrate::DatabaseMigrate;
+use sea_orm::ConnectOptions;
 use sea_orm::Database;
 use sea_orm::DatabaseConnection;
 use sea_orm_migration::MigratorTrait;
 use tracing::debug;
 use tracing::info;
-use gitdata::model::migrate::DatabaseMigrate;
+
 use crate::jobs::email::EmailJobs;
 use crate::jobs::email::send_email;
 
@@ -109,4 +110,3 @@ async fn database_conn(url : PgConfig) -> anyhow::Result<DatabaseConnection> {
     }
     Ok(db)
 }
-

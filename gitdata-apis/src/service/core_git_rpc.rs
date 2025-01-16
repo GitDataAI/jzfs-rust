@@ -4,6 +4,8 @@ use tokio::sync::OnceCell;
 
 pub static RPC_CLIENT : OnceCell<CoreGitRpc> = OnceCell::const_new();
 
+
+#[derive(Clone,Debug)]
 pub struct CoreGitRpc {
     pub client : RepRepositoryClient<tonic::transport::Channel>,
 }
@@ -22,5 +24,17 @@ impl CoreGitRpc {
         Ok(CoreGitRpc {
             client : core_git_rpc,
         })
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_rpc() {
+        let rpc = CoreGitRpc::get().await;
+        dbg!(rpc);
     }
 }

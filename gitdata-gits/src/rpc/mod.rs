@@ -1,10 +1,6 @@
 pub mod core_git;
 pub mod git_core;
 
-use std::io;
-
-use async_trait::async_trait;
-
 pub enum RepositoryAccess {
     None,
     Read,

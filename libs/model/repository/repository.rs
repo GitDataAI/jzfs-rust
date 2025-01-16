@@ -11,6 +11,7 @@
 use sea_orm::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use crate::config::git::GitConfig;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
 #[sea_orm(table_name = "repository")]
@@ -66,6 +67,7 @@ impl ActiveModel {
         visible: bool,
         default_branch: Option<String>,
     ) -> Self {
+        let git_config = GitConfig::get();
         Self {
             uid: Set(Uuid::new_v4()),
             name: Set(name.clone()),
@@ -77,8 +79,8 @@ impl ActiveModel {
             mirrors: Set(false),
             archive: Set(false),
             archive_time: Set(None),
-            ssh_path: Set(format!("git@gitdata.ai:{}/{}", owner_uid, name)),
-            http_path: Set(format!("https://gitdata.ai/{}/{}", owner_uid, name)),
+            ssh_path: Set(format!("{}:{}/{}", git_config.ssh, owner_uid, name)),
+            http_path: Set(format!("{}/{}/{}", git_config.http, owner_uid, name)),
             storage_node: Set("".to_string()),
             fork: Set(false),
             fork_uid: Set(None),

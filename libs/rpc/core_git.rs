@@ -13,6 +13,30 @@ pub struct RepositoryCreate {
     #[prost(message, optional, tag = "1")]
     pub storage_position: ::core::option::Option<RepositoryStoragePosition>,
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RepositoryAddFileRequest {
+    #[prost(message, optional, tag = "1")]
+    pub repository_storage_position: ::core::option::Option<RepositoryStoragePosition>,
+    #[prost(string, tag = "2")]
+    pub path: ::prost::alloc::string::String,
+    #[prost(bytes = "vec", tag = "3")]
+    pub content: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "4")]
+    pub email: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub user: ::prost::alloc::string::String,
+    #[prost(string, tag = "6")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(string, tag = "7")]
+    pub file_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "8")]
+    pub branch: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RepositoryAddFilesResponse {
+    #[prost(string, tag = "1")]
+    pub code: ::prost::alloc::string::String,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum RepositoryStoragePositionType {
@@ -157,6 +181,30 @@ pub mod rep_repository_client {
                 .insert(GrpcMethod::new("core_git.RepRepository", "Create"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn add_file(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RepositoryAddFileRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryAddFilesResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/core_git.RepRepository/AddFile",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("core_git.RepRepository", "AddFile"));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -177,6 +225,13 @@ pub mod rep_repository_server {
             request: tonic::Request<super::RepositoryCreate>,
         ) -> std::result::Result<
             tonic::Response<super::RepositoryStoragePosition>,
+            tonic::Status,
+        >;
+        async fn add_file(
+            &self,
+            request: tonic::Request<super::RepositoryAddFileRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryAddFilesResponse>,
             tonic::Status,
         >;
     }
@@ -286,6 +341,51 @@ pub mod rep_repository_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = CreateSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core_git.RepRepository/AddFile" => {
+                    #[allow(non_camel_case_types)]
+                    struct AddFileSvc<T: RepRepository>(pub Arc<T>);
+                    impl<
+                        T: RepRepository,
+                    > tonic::server::UnaryService<super::RepositoryAddFileRequest>
+                    for AddFileSvc<T> {
+                        type Response = super::RepositoryAddFilesResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::RepositoryAddFileRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as RepRepository>::add_file(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = AddFileSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

@@ -1,11 +1,7 @@
 use std::collections::HashMap;
 use std::io;
-use std::io::Error;
 
 use actix_files::NamedFile;
-use async_trait::async_trait;
-use bytes::Bytes;
-use futures_core::Stream;
 
 use crate::mount::local::LocalStorage;
 use crate::mount::nfs::NfsStorage;
@@ -19,9 +15,9 @@ pub mod s3;
 
 #[derive(Clone)]
 pub struct StoragePool {
-    s3 : HashMap<String, S3Storage>,
-    local : HashMap<String, LocalStorage>,
-    nfs : HashMap<String, NfsStorage>,
+    pub(crate) s3 : HashMap<String, S3Storage>,
+    pub(crate) local : HashMap<String, LocalStorage>,
+    pub(crate) nfs : HashMap<String, NfsStorage>,
 }
 
 impl Default for StoragePool {
@@ -67,7 +63,7 @@ impl StoragePool {
                 }
             }
         }
-        return None;
+        None
     }
 }
 

@@ -1,8 +1,8 @@
 use std::io;
 
-use gitdata::config;
 use log::info;
 use tonic::transport::Server;
+use crate::mount::local::LocalStorage;
 
 pub mod health;
 pub mod http;
@@ -14,17 +14,24 @@ pub mod ssh;
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
     info!("starting gitdata");
-    let pool = mount::StoragePool::new();
+    let mut pool = mount::StoragePool::new();
+    pool
+        .add_local(
+            "default".to_string(),
+            LocalStorage {
+                root : std::env::current_dir()?.join("./data"),
+            }
+        );
     let http = tokio::spawn(http::http(pool.clone()));
     let health = tokio::spawn(async move {
         let health = gitdata::health::service::HealthService::default();
         let core_git = rpc::core_git::CoreGit::new(pool.clone());
         info!("starting health service");
         Server::builder()
-            // .trace_fn(|x|{
-            //     info!("Url: {:?} Method: {}", x.uri(),x.method());
-            //     tracing::Span::current()
-            // })
+            .trace_fn(|x|{
+                info!("Url: {:?} Method: {}", x.uri(),x.method());
+                tracing::Span::current()
+            })
             .add_service(gitdata::rpc::health::health_server::HealthServer::new(
                 health,
             ))

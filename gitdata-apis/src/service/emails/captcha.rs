@@ -42,7 +42,7 @@ impl AppState {
             email,
             "GitData 验证码".parse()?,
             EmailType::RegistrationVerificationCode,
-            captcha.to_string()
+            captcha.to_string(),
         );
         let mut email_jobs = self
             .email_jobs
