@@ -6,10 +6,10 @@ pub struct RepositoryStoragePosition {
     #[prost(string, tag = "3")]
     pub node: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RepositoryCreate {
-    #[prost(message, optional, tag = "1")]
-    pub storage_position: ::core::option::Option<RepositoryStoragePosition>,
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct AccessResponse {
+    #[prost(enumeration = "RepositoryAccess", tag = "1")]
+    pub access: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PathRequest {
@@ -36,71 +36,13 @@ pub struct PublickeyRequest {
     #[prost(string, tag = "3")]
     pub publickey: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RepositoryList {
-    #[prost(message, repeated, tag = "1")]
-    pub repositories: ::prost::alloc::vec::Vec<Repository>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Repository {
-    #[prost(string, tag = "1")]
-    pub uid: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub name: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub owner_uid: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub default_branch: ::prost::alloc::string::String,
-    #[prost(bool, tag = "6")]
-    pub visible: bool,
-    #[prost(bool, tag = "7")]
-    pub template: bool,
-    #[prost(bool, tag = "8")]
-    pub mirrors: bool,
-    #[prost(bool, tag = "9")]
-    pub archive: bool,
-    #[prost(int64, tag = "10")]
-    pub archive_time: i64,
-    #[prost(string, tag = "11")]
-    pub ssh_path: ::prost::alloc::string::String,
-    #[prost(string, tag = "12")]
-    pub http_path: ::prost::alloc::string::String,
-    #[prost(bool, tag = "13")]
-    pub fork: bool,
-    #[prost(string, tag = "25")]
-    pub storage_node: ::prost::alloc::string::String,
-    #[prost(string, tag = "14")]
-    pub fork_uid: ::prost::alloc::string::String,
-    #[prost(int64, tag = "15")]
-    pub nums_star: i64,
-    #[prost(int64, tag = "16")]
-    pub nums_fork: i64,
-    #[prost(int64, tag = "17")]
-    pub nums_watch: i64,
-    #[prost(int64, tag = "18")]
-    pub nums_issue: i64,
-    #[prost(int64, tag = "19")]
-    pub nums_pull: i64,
-    #[prost(int64, tag = "20")]
-    pub nums_commit: i64,
-    #[prost(string, tag = "21")]
-    pub head: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag = "22")]
-    pub license: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(int64, tag = "23")]
-    pub created_at: i64,
-    #[prost(int64, tag = "24")]
-    pub updated_at: i64,
-}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum RepositoryAccess {
     None = 0,
     Read = 1,
-    Write = 2,
-    Admin = 3,
+    Write = 4,
+    Admin = 7,
 }
 impl RepositoryAccess {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -244,7 +186,7 @@ pub mod rep_repository_client {
         pub async fn token(
             &mut self,
             request: impl tonic::IntoRequest<super::TokenRequest>,
-        ) -> std::result::Result<tonic::Response<super::RepositoryList>, tonic::Status> {
+        ) -> std::result::Result<tonic::Response<super::AccessResponse>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -265,7 +207,7 @@ pub mod rep_repository_client {
         pub async fn publickey(
             &mut self,
             request: impl tonic::IntoRequest<super::PublickeyRequest>,
-        ) -> std::result::Result<tonic::Response<super::RepositoryList>, tonic::Status> {
+        ) -> std::result::Result<tonic::Response<super::AccessResponse>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -281,30 +223,6 @@ pub mod rep_repository_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("git_core.RepRepository", "Publickey"));
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn create(
-            &mut self,
-            request: impl tonic::IntoRequest<super::RepositoryCreate>,
-        ) -> std::result::Result<
-            tonic::Response<super::RepositoryStoragePosition>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/git_core.RepRepository/Create",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("git_core.RepRepository", "Create"));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -332,18 +250,11 @@ pub mod rep_repository_server {
         async fn token(
             &self,
             request: tonic::Request<super::TokenRequest>,
-        ) -> std::result::Result<tonic::Response<super::RepositoryList>, tonic::Status>;
+        ) -> std::result::Result<tonic::Response<super::AccessResponse>, tonic::Status>;
         async fn publickey(
             &self,
             request: tonic::Request<super::PublickeyRequest>,
-        ) -> std::result::Result<tonic::Response<super::RepositoryList>, tonic::Status>;
-        async fn create(
-            &self,
-            request: tonic::Request<super::RepositoryCreate>,
-        ) -> std::result::Result<
-            tonic::Response<super::RepositoryStoragePosition>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::AccessResponse>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct RepRepositoryServer<T> {
@@ -471,7 +382,7 @@ pub mod rep_repository_server {
                     impl<
                         T: RepRepository,
                     > tonic::server::UnaryService<super::TokenRequest> for TokenSvc<T> {
-                        type Response = super::RepositoryList;
+                        type Response = super::AccessResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,
@@ -516,7 +427,7 @@ pub mod rep_repository_server {
                         T: RepRepository,
                     > tonic::server::UnaryService<super::PublickeyRequest>
                     for PublickeySvc<T> {
-                        type Response = super::RepositoryList;
+                        type Response = super::AccessResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,
@@ -539,51 +450,6 @@ pub mod rep_repository_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = PublickeySvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/git_core.RepRepository/Create" => {
-                    #[allow(non_camel_case_types)]
-                    struct CreateSvc<T: RepRepository>(pub Arc<T>);
-                    impl<
-                        T: RepRepository,
-                    > tonic::server::UnaryService<super::RepositoryCreate>
-                    for CreateSvc<T> {
-                        type Response = super::RepositoryStoragePosition;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::RepositoryCreate>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as RepRepository>::create(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = CreateSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

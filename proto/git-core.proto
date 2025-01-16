@@ -7,8 +7,8 @@ package git_core;
 enum RepositoryAccess {
     NONE = 0;
     READ = 1;
-    WRITE = 2;
-    ADMIN = 3;
+    WRITE = 4;
+    ADMIN = 7;
 }
 
 
@@ -16,17 +16,15 @@ message RepositoryStoragePosition {
     string path = 2;
     string node = 3;
 }
-message RepositoryCreate {
-    RepositoryStoragePosition storage_position = 1;
-}
 
 service RepRepository {
     rpc Path(PathRequest) returns (RepositoryStoragePosition) {}
-    rpc Token(TokenRequest) returns (RepositoryList) {}
-    rpc Publickey(PublickeyRequest) returns (RepositoryList) {}
-    rpc Create(RepositoryCreate) returns (RepositoryStoragePosition) {}
+    rpc Token(TokenRequest) returns (AccessResponse) {}
+    rpc Publickey(PublickeyRequest) returns (AccessResponse) {}
 }
-
+message AccessResponse {
+    RepositoryAccess access = 1;
+}
 message PathRequest {
     string owner = 1;
     string repo = 2;
@@ -43,34 +41,3 @@ message PublickeyRequest {
     string repo = 2;
     string publickey = 3;
 }
-message RepositoryList {
-    repeated Repository repositories = 1;
-}
-message Repository {
-    string uid = 1;
-    string name = 2;
-    string description = 3;
-    string owner_uid = 4;
-    string default_branch = 5;
-    bool visible = 6;
-    bool template = 7;
-    bool mirrors = 8;
-    bool archive = 9;
-    int64 archive_time = 10;
-    string ssh_path = 11;
-    string http_path = 12;
-    bool fork = 13;
-    string storage_node = 25;
-    string fork_uid = 14;
-    int64 nums_star = 15;
-    int64 nums_fork = 16;
-    int64 nums_watch = 17;
-    int64 nums_issue = 18;
-    int64 nums_pull = 19;
-    int64 nums_commit = 20;
-    string head = 21;
-    repeated string license = 22;
-    int64 created_at = 23;
-    int64 updated_at = 24;
-}
-

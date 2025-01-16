@@ -1,11 +1,10 @@
 use std::sync::Arc;
 
+use crate::rpc::NodePath;
 use futures::io;
 use gitdata::rpc::git_core;
-use gitdata::rpc::git_core::Repository;
+use gitdata::rpc::git_core::AccessResponse;
 use tokio::sync::Mutex;
-
-use crate::rpc::NodePath;
 
 #[derive(Clone)]
 pub struct RepositoryRpc {
@@ -33,13 +32,13 @@ impl RepositoryRpc {
         owner : String,
         repo : String,
         token : String,
-    ) -> io::Result<Vec<Repository>> {
+    ) -> io::Result<AccessResponse> {
         let mut client = self.client.lock().await;
         match client
             .token(git_core::TokenRequest { owner, repo, token })
             .await
         {
-            Ok(x) => Ok(x.into_inner().repositories),
+            Ok(x) => Ok(x.into_inner()),
             Err(e) => Err(io::Error::new(io::ErrorKind::Other, e)),
         }
     }
@@ -49,7 +48,7 @@ impl RepositoryRpc {
         owner : String,
         repo : String,
         publickey : String,
-    ) -> io::Result<Vec<Repository>> {
+    ) -> io::Result<AccessResponse> {
         let mut client = self.client.lock().await;
         match client
             .publickey(git_core::PublickeyRequest {
@@ -59,7 +58,7 @@ impl RepositoryRpc {
             })
             .await
         {
-            Ok(x) => Ok(x.into_inner().repositories),
+            Ok(x) => Ok(x.into_inner()),
             Err(e) => Err(io::Error::new(io::ErrorKind::Other, e)),
         }
     }

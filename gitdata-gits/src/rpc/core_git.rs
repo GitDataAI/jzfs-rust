@@ -122,10 +122,10 @@ impl rep_repository_server::RepRepository for CoreGit {
         };
         match storage.commit(node.path.clone(), request.branch).await {
             Ok(x) => {
-                return Ok(Response::new(RepositorySyncCommitResponse { commits : x }));
+                Ok(Response::new(RepositorySyncCommitResponse { commits: x }))
             }
             Err(e) => {
-                return Err(Status::internal(e.to_string()));
+                Err(Status::internal(e.to_string()))
             }
         }
     }

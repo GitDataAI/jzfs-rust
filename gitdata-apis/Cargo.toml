@@ -18,8 +18,6 @@ actix-session = { version = "0.10.1", features = ["redis-pool","redis-session","
 actix-session-ext = { version = "0.1.0", features = [] }
 actix-identity = { version = "0.8.0", features = [] }
 actix-settings = { version = "0.8.0", features = [] }
-background-jobs = { version = "0.19.0", features = ["tokio","sled","postgres"] }
-background-jobs-actix = { version = "0.19.0", features = [] }
 deadpool-redis = { version = "~0.16.0", features = ["rt_tokio_1","cluster","serde"] }
 anyhow = { version = "1", features = ["backtrace", "std"] }
 serde = { version = "1.0.217", features = ["derive"] }

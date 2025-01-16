@@ -9,7 +9,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::service::AppState;
-use crate::service::core_git_rpc::CoreGitRpc;
+use crate::service::rpc::CoreGitRpc;
 
 #[derive(Deserialize, Serialize)]
 pub struct RepoCreateParam {
@@ -20,7 +20,6 @@ pub struct RepoCreateParam {
     pub default_branch : Option<String>,
     pub readme : bool,
     pub node : String,
-    pub storage_position : i32,
     pub message : Option<String>,
 }
 
@@ -36,6 +35,7 @@ impl AppState {
             param.description,
             param.visible,
             param.default_branch.clone(),
+            param.node.clone(),
         );
         let txn = self.active_write.begin().await?;
         match active_model.clone().insert(&txn).await {

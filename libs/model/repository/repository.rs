@@ -56,6 +56,9 @@ impl Entity {
     pub fn find_by_uid(uid: Uuid) -> Select<Entity> {
         Entity::find().filter(Column::Uid.eq(uid))
     }
+    pub fn find_by_name(name: String) -> Select<Entity> {
+        Entity::find().filter(Column::Name.eq(name))
+    }
 }
 
 
@@ -66,6 +69,7 @@ impl ActiveModel {
         description: Option<String>,
         visible: bool,
         default_branch: Option<String>,
+        node: String,
     ) -> Self {
         let git_config = GitConfig::get();
         Self {
@@ -81,7 +85,7 @@ impl ActiveModel {
             archive_time: Set(None),
             ssh_path: Set(format!("{}:{}/{}", git_config.ssh, owner_uid, name)),
             http_path: Set(format!("{}/{}/{}", git_config.http, owner_uid, name)),
-            storage_node: Set("".to_string()),
+            storage_node: Set(node),
             fork: Set(false),
             fork_uid: Set(None),
             nums_star: Set(0),
