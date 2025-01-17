@@ -121,12 +121,8 @@ impl rep_repository_server::RepRepository for CoreGit {
             }
         };
         match storage.commit(node.path.clone(), request.branch).await {
-            Ok(x) => {
-                Ok(Response::new(RepositorySyncCommitResponse { commits: x }))
-            }
-            Err(e) => {
-                Err(Status::internal(e.to_string()))
-            }
+            Ok(x) => Ok(Response::new(RepositorySyncCommitResponse { commits : x })),
+            Err(e) => Err(Status::internal(e.to_string())),
         }
     }
     async fn sync_blob(
@@ -184,6 +180,122 @@ impl rep_repository_server::RepRepository for CoreGit {
         };
         match storage.tage(request.path.clone()).await {
             Ok(x) => Ok(Response::new(RepositoryTagsResponse { tags : x })),
+            Err(e) => Err(Status::internal(e.to_string())),
+        }
+    }
+    async fn delete(
+        &self,
+        request : tonic::Request<RepositoryStoragePosition>,
+    ) -> std::result::Result<tonic::Response<RepositoryStoragePosition>, tonic::Status> {
+        let request = request.into_inner();
+        let storage = match self.storage.node.get(&request.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        match storage.delete_repository(request.path.clone()).await {
+            Ok(_) => Ok(Response::new(RepositoryStoragePosition {
+                node : request.node,
+                path : request.path,
+            })),
+            Err(e) => Err(Status::internal(e.to_string())),
+        }
+    }
+    async fn create_branch(
+        &self,
+        request : tonic::Request<RepositoryCreateBranchRequest>,
+    ) -> std::result::Result<tonic::Response<RepositoryBranch>, tonic::Status> {
+        let request = request.into_inner();
+        let position = match request.position {
+            Some(x) => x,
+            None => {
+                return Err(Status::internal("position not found"));
+            }
+        };
+        let storage = match self.storage.node.get(&position.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+
+        match storage
+            .create_branch(position.path.clone(), request.branch, request.from)
+            .await
+        {
+            Ok(_) => Ok(Response::new(RepositoryBranch {
+                name : "".to_string(),
+                head : "".to_string(),
+                commit_nums : 0,
+                from : None,
+                to : None,
+                start : false,
+            })),
+            Err(e) => Err(Status::internal(e.to_string())),
+        }
+    }
+    async fn delete_branch(
+        &self,
+        request : tonic::Request<RepositoryDeleteBranchRequest>,
+    ) -> std::result::Result<tonic::Response<RepositoryBranch>, tonic::Status> {
+        let request = request.into_inner();
+        let position = match request.position {
+            Some(x) => x,
+            None => {
+                return Err(Status::internal("position not found"));
+            }
+        };
+        let storage = match self.storage.node.get(&position.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        match storage
+            .delete_branch(position.path.clone(), request.branch)
+            .await
+        {
+            Ok(_) => Ok(Response::new(RepositoryBranch {
+                name : "".to_string(),
+                head : "".to_string(),
+                commit_nums : 0,
+                from : None,
+                to : None,
+                start : false,
+            })),
+            Err(e) => Err(Status::internal(e.to_string())),
+        }
+    }
+    async fn re_name_branch(
+        &self,
+        request : tonic::Request<RepositoryReNameBranchRequest>,
+    ) -> std::result::Result<tonic::Response<RepositoryBranch>, tonic::Status> {
+        let request = request.into_inner();
+        let position = match request.position {
+            Some(x) => x,
+            None => {
+                return Err(Status::internal("position not found"));
+            }
+        };
+        let storage = match self.storage.node.get(&position.node) {
+            Some(storage) => storage,
+            None => {
+                return Err(Status::invalid_argument("node not found"));
+            }
+        };
+        match storage
+            .branch_rename(position.path.clone(), request.branch, request.new_name)
+            .await
+        {
+            Ok(_) => Ok(Response::new(RepositoryBranch {
+                name : "".to_string(),
+                head : "".to_string(),
+                commit_nums : 0,
+                from : None,
+                to : None,
+                start : false,
+            })),
             Err(e) => Err(Status::internal(e.to_string())),
         }
     }

@@ -1,8 +1,11 @@
+#![feature(exit_status_error)]
+
 use std::io;
 
+use gitdata::config;
 use log::info;
 use tonic::transport::Server;
-use gitdata::config;
+
 use crate::mount::git::NodeStorage;
 
 pub mod health;
@@ -17,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
     info!("starting gitdata");
     let mut pool = mount::StoragePool::new();
     pool.add_node("default".to_string(), NodeStorage {
-        root : std::env::current_dir()?.join("./data"),
+        root : std::env::current_dir()?.join("/data"),
     });
     let http = tokio::spawn(http::http(pool.clone()));
     let health = tokio::spawn(async move {
@@ -25,7 +28,12 @@ async fn main() -> anyhow::Result<()> {
         let core_git = rpc::core_git::CoreGit::new(pool.clone());
         info!("starting health service");
         let config = config::rpc::RpcConfig::load().expect("failed to load rpc config");
-        let addr = config.coregit_node().expect("failed to load gitcore node").url().parse().expect("failed to parse url");
+        let addr = config
+            .coregit_node()
+            .expect("failed to load gitcore node")
+            .url()
+            .parse()
+            .expect("failed to parse url");
         info!("connecting to gitcore node at {:?}", addr);
         Server::builder()
             .trace_fn(|x| {
