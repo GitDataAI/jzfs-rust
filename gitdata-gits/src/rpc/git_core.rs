@@ -1,10 +1,11 @@
 use std::sync::Arc;
 
-use crate::rpc::NodePath;
 use futures::io;
 use gitdata::rpc::git_core;
 use gitdata::rpc::git_core::AccessResponse;
 use tokio::sync::Mutex;
+
+use crate::rpc::NodePath;
 
 #[derive(Clone)]
 pub struct RepositoryRpc {

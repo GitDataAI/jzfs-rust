@@ -12,6 +12,7 @@ use sea_orm::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::config::git::GitConfig;
+use crate::rpc::core_git::RepositoryStoragePosition;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
 #[sea_orm(table_name = "repository")]
@@ -22,6 +23,7 @@ pub struct Model {
     pub description: Option<String>,
     pub owner_uid: Uuid,
     pub default_branch: String,
+    pub website: Option<String>,
     pub visible: bool,
     pub template: bool,
     pub mirrors: bool,
@@ -60,7 +62,14 @@ impl Entity {
         Entity::find().filter(Column::Name.eq(name))
     }
 }
-
+impl Model {
+    pub fn node(&self) -> RepositoryStoragePosition {
+        RepositoryStoragePosition {
+            path: self.uid.to_string(),
+            node: self.storage_node.clone()
+        }
+    }
+}
 
 impl ActiveModel {
     pub fn new(
@@ -90,6 +99,7 @@ impl ActiveModel {
             fork_uid: Set(None),
             nums_star: Set(0),
             nums_fork: Set(0),
+            website: Set(None),
             nums_watch: Set(0),
             nums_issue: Set(0),
             nums_pull: Set(0),

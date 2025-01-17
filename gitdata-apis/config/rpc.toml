@@ -1,8 +1,8 @@
 [[nodes]]
 [nodes.Health]
 node_id = "Health-0"
-host ="http://127.0.0.1"
-port = 50051
+host = "http://127.0.0.1"
+port = 50050
 
 [[nodes]]
 [nodes.CoreGit]
@@ -14,4 +14,4 @@ port = 50051
 [nodes.GitCore]
 node_id = "GitCore-0"
 host = "http://127.0.0.1"
-port = 50051
+port = 50052

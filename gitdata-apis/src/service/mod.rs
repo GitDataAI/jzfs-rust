@@ -19,15 +19,17 @@ use sea_orm_migration::MigratorTrait;
 use tonic::transport::Server;
 use tracing::debug;
 use tracing::info;
+
 use crate::jobs::email::EmailJobs;
 use crate::jobs::email::send_email;
-use crate::jobs::sync_repo::{sync_repo, SyncRepoMessage};
+use crate::jobs::sync_repo::SyncRepoMessage;
+use crate::jobs::sync_repo::sync_repo;
 use crate::service::rpc::GitCoreRpc;
 
 pub mod auth;
-pub mod rpc;
 pub mod emails;
 pub mod repository;
+pub mod rpc;
 pub mod users;
 
 #[derive(Clone)]
@@ -58,7 +60,7 @@ impl AppState {
             jobs_pool.clone(),
             Config::new("apalis::Repository::Sync"),
         );
-        
+
         let mut pg =
             PostgresStorage::new_with_config(jobs_pool.clone(), Config::new("apalis::Email"));
         let migrator = PostgresStorage::migrations();
@@ -71,12 +73,12 @@ impl AppState {
             listener.listen().await.ok();
         });
         let pc = pg.clone();
-        let sync_pg:PostgresStorage<SyncRepoMessage> = sync_jobs.clone();
+        let sync_pg : PostgresStorage<SyncRepoMessage> = sync_jobs.clone();
         info!("Connect Redis Pool");
         let redis_cfg =
             deadpool_redis::Config::from_url(config.redis.get("Session").unwrap().format());
         let redis_pool = redis_cfg.create_pool(Some(Runtime::Tokio1))?;
-        
+
         let state = AppState {
             active_read,
             active_write,
@@ -112,12 +114,18 @@ impl AppState {
                 .await
                 .ok();
         });
-        
+
         tokio::spawn(async move {
-            let config = gitdata::config::rpc::RpcConfig::load().expect("failed to load rpc config");
+            let config =
+                gitdata::config::rpc::RpcConfig::load().expect("failed to load rpc config");
             let git_core = GitCoreRpc::new(rpc_state.clone());
             let health = gitdata::health::service::HealthService::default();
-            let addr = config.gitcore_node().expect("failed to load gitcore node").url().parse().expect("failed to parse url");
+            let addr = config
+                .gitcore_node()
+                .expect("failed to load gitcore node")
+                .url()
+                .parse()
+                .expect("failed to parse url");
             info!("Starting GitCore RPC Server at {:?}", addr);
             Server::builder()
                 .trace_fn(|x| {
@@ -128,7 +136,9 @@ impl AppState {
                     health,
                 ))
                 .add_service(
-                    gitdata::rpc::git_core::rep_repository_server::RepRepositoryServer::new(git_core),
+                    gitdata::rpc::git_core::rep_repository_server::RepRepositoryServer::new(
+                        git_core,
+                    ),
                 )
                 .serve(addr)
                 .await

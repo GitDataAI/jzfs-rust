@@ -36,6 +36,31 @@ pub struct RepositorySyncBranchResponse {
     pub branches: ::prost::alloc::vec::Vec<RepositoryBranch>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RepositoryCreateBranchRequest {
+    #[prost(message, optional, tag = "1")]
+    pub position: ::core::option::Option<RepositoryStoragePosition>,
+    #[prost(string, tag = "2")]
+    pub branch: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub from: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RepositoryDeleteBranchRequest {
+    #[prost(message, optional, tag = "1")]
+    pub position: ::core::option::Option<RepositoryStoragePosition>,
+    #[prost(string, tag = "2")]
+    pub branch: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RepositoryReNameBranchRequest {
+    #[prost(message, optional, tag = "1")]
+    pub position: ::core::option::Option<RepositoryStoragePosition>,
+    #[prost(string, tag = "2")]
+    pub branch: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub new_name: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RepositorySyncCommitResponse {
     #[prost(message, repeated, tag = "1")]
     pub commits: ::prost::alloc::vec::Vec<RepositoryCommit>,
@@ -251,6 +276,30 @@ pub mod rep_repository_client {
                 .insert(GrpcMethod::new("core_git.RepRepository", "Create"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn delete(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RepositoryStoragePosition>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryStoragePosition>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/core_git.RepRepository/Delete",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("core_git.RepRepository", "Delete"));
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn add_file(
             &mut self,
             request: impl tonic::IntoRequest<super::RepositoryAddFileRequest>,
@@ -371,6 +420,78 @@ pub mod rep_repository_client {
                 .insert(GrpcMethod::new("core_git.RepRepository", "SyncTags"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn create_branch(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RepositoryCreateBranchRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryBranch>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/core_git.RepRepository/CreateBranch",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("core_git.RepRepository", "CreateBranch"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_branch(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RepositoryDeleteBranchRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryBranch>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/core_git.RepRepository/DeleteBranch",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("core_git.RepRepository", "DeleteBranch"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn re_name_branch(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RepositoryReNameBranchRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryBranch>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/core_git.RepRepository/ReNameBranch",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("core_git.RepRepository", "ReNameBranch"));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -387,6 +508,13 @@ pub mod rep_repository_server {
     #[async_trait]
     pub trait RepRepository: std::marker::Send + std::marker::Sync + 'static {
         async fn create(
+            &self,
+            request: tonic::Request<super::RepositoryStoragePosition>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryStoragePosition>,
+            tonic::Status,
+        >;
+        async fn delete(
             &self,
             request: tonic::Request<super::RepositoryStoragePosition>,
         ) -> std::result::Result<
@@ -426,6 +554,27 @@ pub mod rep_repository_server {
             request: tonic::Request<super::RepositoryStoragePosition>,
         ) -> std::result::Result<
             tonic::Response<super::RepositoryTagsResponse>,
+            tonic::Status,
+        >;
+        async fn create_branch(
+            &self,
+            request: tonic::Request<super::RepositoryCreateBranchRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryBranch>,
+            tonic::Status,
+        >;
+        async fn delete_branch(
+            &self,
+            request: tonic::Request<super::RepositoryDeleteBranchRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryBranch>,
+            tonic::Status,
+        >;
+        async fn re_name_branch(
+            &self,
+            request: tonic::Request<super::RepositoryReNameBranchRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RepositoryBranch>,
             tonic::Status,
         >;
     }
@@ -535,6 +684,51 @@ pub mod rep_repository_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = CreateSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core_git.RepRepository/Delete" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteSvc<T: RepRepository>(pub Arc<T>);
+                    impl<
+                        T: RepRepository,
+                    > tonic::server::UnaryService<super::RepositoryStoragePosition>
+                    for DeleteSvc<T> {
+                        type Response = super::RepositoryStoragePosition;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::RepositoryStoragePosition>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as RepRepository>::delete(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -760,6 +954,141 @@ pub mod rep_repository_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = SyncTagsSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core_git.RepRepository/CreateBranch" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateBranchSvc<T: RepRepository>(pub Arc<T>);
+                    impl<
+                        T: RepRepository,
+                    > tonic::server::UnaryService<super::RepositoryCreateBranchRequest>
+                    for CreateBranchSvc<T> {
+                        type Response = super::RepositoryBranch;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::RepositoryCreateBranchRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as RepRepository>::create_branch(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreateBranchSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core_git.RepRepository/DeleteBranch" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteBranchSvc<T: RepRepository>(pub Arc<T>);
+                    impl<
+                        T: RepRepository,
+                    > tonic::server::UnaryService<super::RepositoryDeleteBranchRequest>
+                    for DeleteBranchSvc<T> {
+                        type Response = super::RepositoryBranch;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::RepositoryDeleteBranchRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as RepRepository>::delete_branch(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteBranchSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core_git.RepRepository/ReNameBranch" => {
+                    #[allow(non_camel_case_types)]
+                    struct ReNameBranchSvc<T: RepRepository>(pub Arc<T>);
+                    impl<
+                        T: RepRepository,
+                    > tonic::server::UnaryService<super::RepositoryReNameBranchRequest>
+                    for ReNameBranchSvc<T> {
+                        type Response = super::RepositoryBranch;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::RepositoryReNameBranchRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as RepRepository>::re_name_branch(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ReNameBranchSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

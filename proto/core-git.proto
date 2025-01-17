@@ -29,15 +29,37 @@ message RepositoryAddFilesResponse {
 }
 service RepRepository {
   rpc Create(RepositoryStoragePosition) returns (RepositoryStoragePosition) {}
+  rpc Delete(RepositoryStoragePosition) returns (RepositoryStoragePosition) {}
   rpc AddFile(RepositoryAddFileRequest) returns (RepositoryAddFilesResponse) {}
   rpc SyncBranch(RepositoryStoragePosition) returns (RepositorySyncBranchResponse) {}
   rpc SyncCommit(RepositoryCommitRequest) returns (RepositorySyncCommitResponse) {}
   rpc SyncBlob(RepositoryFileRequest) returns (RepositoryFileResponse) {}
   rpc SyncTags(RepositoryStoragePosition) returns (RepositoryTagsResponse) {}
+
+  rpc CreateBranch(RepositoryCreateBranchRequest) returns (RepositoryBranch) {}
+  rpc DeleteBranch(RepositoryDeleteBranchRequest) returns (RepositoryBranch) {}
+  rpc ReNameBranch(RepositoryReNameBranchRequest) returns (RepositoryBranch) {}
 }
 
 message RepositorySyncBranchResponse {
   repeated RepositoryBranch branches = 1;
+}
+
+message RepositoryCreateBranchRequest {
+  RepositoryStoragePosition position = 1;
+  string branch = 2;
+  string from = 3;
+}
+
+message RepositoryDeleteBranchRequest {
+  RepositoryStoragePosition position = 1;
+  string branch = 2;
+}
+
+message RepositoryReNameBranchRequest {
+  RepositoryStoragePosition position = 1;
+  string branch = 2;
+  string new_name = 3;
 }
 message RepositorySyncCommitResponse {
   repeated RepositoryCommit commits = 1;

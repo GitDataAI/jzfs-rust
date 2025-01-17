@@ -1,4 +1,3 @@
-use std::io;
 use std::io::Cursor;
 use std::io::Error;
 use std::io::Read;
@@ -7,17 +6,20 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::Stdio;
+use std::time::Duration;
+use std::io;
 
 use actix_files::NamedFile;
+use anyhow::Context;
 use async_fn_stream::fn_stream;
 use bytes::Bytes;
 use flate2::read::GzDecoder;
 use futures_core::Stream;
-use git2::Signature;
 use gitdata::rpc::core_git::RepositoryBranch;
 use gitdata::rpc::core_git::RepositoryCommit;
 use gitdata::rpc::core_git::RepositoryTags;
 use gitdata::rpc::core_git::RepositoryTree;
+use tokio::time::sleep;
 
 use crate::service::GitServiceType;
 
@@ -187,111 +189,104 @@ impl NodeStorage {
             Err(anyhow::anyhow!("Unknown Error"))
         }
     }
+    pub(crate) async fn delete_repository(&self, path : String) -> anyhow::Result<()> {
+        if std::fs::read_dir(&self.root.join(path.clone())).is_err() {
+            return Err(anyhow::anyhow!("Repository Path does not exists"));
+        }
+        std::fs::remove_dir_all(&self.root.join(path.clone()))
+            .map_err(|_| anyhow::anyhow!("Failed to delete repository"))
+    }
+
+
     pub(crate) async fn add_file(
-        &self,
+        &self,         
         path : String,
         file_path : String,
         bytes : Vec<u8>,
         commit_email : String,
-        commit_users : String,
+        commit_user : String,
         commit_message : String,
         file_name : String,
         branch_name : String,
     ) -> anyhow::Result<()> {
-        use anyhow::Context;
-
-        let path = self.root.join(path);
-        let tmp = tempfile::tempdir().context("Failed to create temporary directory")?;
-        let clone_repository = git2::Repository::clone(
-            match path.to_str() {
-                Some(x) => x,
-                None => return Err(anyhow::anyhow!("Path is not valid")),
-            },
-            tmp.path(),
-        )
-        .context("Failed to clone repository")?;
-
-        let branch = match clone_repository.find_branch(&branch_name, git2::BranchType::Local) {
-            Ok(branch) => branch,
-            Err(_) => {
-                let head_commit = clone_repository
-                    .head()
-                    .context("Failed to get HEAD")?
-                    .peel_to_commit()
-                    .context("Failed to peel HEAD to commit")?;
-                clone_repository
-                    .branch(&branch_name, &head_commit, false)
-                    .context("Failed to create branch")?;
-                clone_repository
-                    .find_branch(&branch_name, git2::BranchType::Local)
-                    .context("Failed to find branch after creation")?
-            }
-        };
-
-        let branch_name = branch
-            .name()
-            .transpose()
-            .context("Failed to get branch name")?
-            .map_err(|_| anyhow::anyhow!("Branch name is empty"))?;
-
-        if !branch.is_head() {
-            clone_repository
-                .set_head(&branch_name)
-                .context("Failed to set HEAD to branch")?;
-            clone_repository
-                .checkout_head(Some(git2::build::CheckoutBuilder::default().force()))
-                .context("Failed to check out HEAD")?;
+        let tmp = self.root.join("tmp");
+        if !tmp.exists() {
+            std::fs::create_dir_all(&tmp)?;
         }
-
-        let full_file_path = tmp.path().join(&file_path).join(&file_name);
-        std::fs::create_dir_all(
-            full_file_path
-                .parent()
-                .context("Failed to get parent directory")?,
-        )?;
-        std::fs::write(&full_file_path, bytes).context("Failed to write file")?;
-
-        let relative_path = full_file_path
-            .strip_prefix(tmp.path())
-            .context("Failed to strip prefix from file path")?;
-        let mut index = clone_repository
-            .index()
-            .context("Failed to get repository index")?;
-        index
-            .add_path(relative_path)
-            .context("Failed to add file to index")?;
-        index.write().context("Failed to write index")?;
-
-        let time = chrono::Utc::now().timestamp();
-        let time = git2::Time::new(time, 0);
-        let user = Signature::new(&commit_users, &commit_email, &time)
-            .context("Failed to create commit signature")?;
-        let tree = clone_repository
-            .find_tree(index.write_tree().context("Failed to write tree")?)
-            .context("Failed to find tree")?;
-        let parent_commit = clone_repository
-            .find_commit(
-                branch
-                    .get()
-                    .target()
-                    .context("Failed to get branch target")?,
-            )
-            .context("Failed to find parent commit")?;
-        clone_repository
-            .commit(Some("HEAD"), &user, &user, &commit_message, &tree, &[
-                &parent_commit,
-            ])
-            .context("Failed to create commit")?;
-
-        let refspec = format!("refs/heads/{}:refs/heads/{}", branch_name, branch_name);
-        clone_repository
-            .find_remote("origin")
-            .context("Failed to find remote 'origin'")?
-            .push(&[refspec.as_str()], Some(&mut git2::PushOptions::new()))
-            .context("Failed to push changes to remote")?;
-
+        let tmp_file = tmp.join(path.clone());
+        Command::new("git")
+            .current_dir(tmp.clone())
+            .arg("clone")
+            .arg(&self.root.join(path.clone()))
+            .spawn()?
+            .wait()?;
+        if !tmp_file.exists() {
+            return Err(anyhow::anyhow!("Repository Path does not exists"));
+        }
+        
+        
+        let repository = git2::Repository::open(tmp_file.clone())?;
+        let mut head = false;
+        if repository.find_branch(&branch_name, git2::BranchType::Local).is_err() {
+            head = true;
+            Command::new("git")
+                .current_dir(tmp_file.clone())
+                .arg("branch")
+                .arg("-m")
+                .arg(branch_name.clone())
+                .spawn()?
+                .wait()?;
+        }
+        
+        let t = tmp_file.join(file_path.clone());
+        if !t.exists() {
+            std::fs::create_dir_all(t.clone())?;
+        };
+        dbg!(format!("{}/{}/{}", tmp_file.clone().to_str().unwrap_or("/"), file_path, file_name));
+        
+        let mut s = std::fs::File::options()
+            .create(true)
+            .write(true)
+            .open(format!("{}/{}/{}", tmp_file.clone().to_str().unwrap_or("/"), file_path, file_name))?;
+        s.write_all(&bytes)?;
+        s.flush()?;
+        sleep(Duration::from_secs(1)).await;
+        
+        Command::new("git")
+            .current_dir(tmp_file.clone())
+            .arg("add")
+            .arg(".")
+            .spawn()?
+            .wait()?;
+        Command::new("git")
+            .current_dir(tmp_file.clone())
+            .arg("commit")
+            .arg("-m")
+            .arg(commit_message)
+            .arg("--author")
+            .arg(format!("{} <{}>", commit_user, commit_email))
+            .spawn()?
+            .wait()?;
+        if head {
+            Command::new("git")
+                .current_dir(tmp_file.clone())
+                .arg("push")
+                .arg("origin")
+                .arg("HEAD")
+                .spawn()?
+                .wait()?;
+        }else {
+            Command::new("git")
+                .current_dir(tmp_file.clone())
+                .arg("push")
+                .spawn()?
+                .wait()?;
+        }
+        
         Ok(())
     }
+
+
     pub(crate) async fn branch(&self, path : String) -> anyhow::Result<Vec<RepositoryBranch>> {
         use anyhow::Context;
         let repository = match git2::Repository::open(self.root.join(path)) {
@@ -504,5 +499,90 @@ impl NodeStorage {
             });
         }
         Ok(result)
+    }
+    pub async fn create_branch(
+        &self,
+        path : String,
+        branch_name : String,
+        source_branch : String,
+    ) -> anyhow::Result<String> {
+        let repository = match git2::Repository::open(self.root.join(path)) {
+            Ok(repo) => repo,
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        match repository.find_branch(&branch_name, git2::BranchType::Local) {
+            Ok(_) => {
+                return Err(anyhow::anyhow!("Branch already exists"));
+            }
+            Err(_) => {}
+        };
+        let source_branch = match repository.find_branch(&source_branch, git2::BranchType::Local) {
+            Ok(branch) => branch,
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        let commit = match source_branch.get().peel_to_commit() {
+            Ok(commit) => commit,
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        match repository.branch(&branch_name, &commit, false) {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        Ok(commit.id().to_string())
+    }
+    pub async fn delete_branch(&self, path : String, branch_name : String) -> anyhow::Result<()> {
+        let repository = match git2::Repository::open(self.root.join(path)) {
+            Ok(repo) => repo,
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        let mut branch = match repository.find_branch(&branch_name, git2::BranchType::Local) {
+            Ok(branch) => branch,
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        match branch.delete() {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        Ok(())
+    }
+    pub async fn branch_rename(
+        &self,
+        path : String,
+        branch_name : String,
+        new_branch_name : String,
+    ) -> anyhow::Result<()> {
+        let repository = match git2::Repository::open(self.root.join(path)) {
+            Ok(repo) => repo,
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        let mut branch = match repository.find_branch(&branch_name, git2::BranchType::Local) {
+            Ok(branch) => branch,
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        match branch.rename(&new_branch_name, false) {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(anyhow::anyhow!("{}", e));
+            }
+        };
+        Ok(())
     }
 }

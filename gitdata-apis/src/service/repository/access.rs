@@ -1,10 +1,17 @@
-use sea_orm::*;
 use gitdata::model::repository::repository;
-use gitdata::model::users::{ssh_keys, token_key, users};
+use gitdata::model::users::ssh_keys;
+use gitdata::model::users::token_key;
+use gitdata::model::users::users;
+use sea_orm::*;
+
 use crate::service::AppState;
 
 impl AppState {
-    pub async fn repo_access_token(&self, repo: repository::Model, tk: String) -> anyhow::Result<token_key::Model>{
+    pub async fn repo_access_token(
+        &self,
+        repo : repository::Model,
+        tk : String,
+    ) -> anyhow::Result<token_key::Model> {
         let owner_model = users::Entity::find_by_uid(repo.owner_uid)
             .one(&self.active_read)
             .await?
@@ -24,9 +31,10 @@ impl AppState {
             match token_key::Entity::find()
                 .filter(token_key::Column::UserUid.eq(owner_model.uid))
                 .all(&self.active_read)
-                .await{
+                .await
+            {
                 Ok(token) => token,
-                Err(_) => return Err(anyhow::anyhow!("token not found"))
+                Err(_) => return Err(anyhow::anyhow!("token not found")),
             }
         };
         for token in tokens {
@@ -35,8 +43,12 @@ impl AppState {
             }
         }
         Err(anyhow::anyhow!("token not found"))
-    } 
-    pub async fn repo_access_ssh(&self, repo: repository::Model, pbk: String) -> anyhow::Result<ssh_keys::Model>{
+    }
+    pub async fn repo_access_ssh(
+        &self,
+        repo : repository::Model,
+        pbk : String,
+    ) -> anyhow::Result<ssh_keys::Model> {
         let owner_model = users::Entity::find_by_uid(repo.owner_uid)
             .one(&self.active_read)
             .await?
@@ -52,13 +64,14 @@ impl AppState {
                 .all(&self.active_read)
                 .await
                 .map_err(|_| anyhow::anyhow!("ssh key not found"))?
-        }else { 
+        } else {
             match ssh_keys::Entity::find()
                 .filter(ssh_keys::Column::UserUid.eq(owner_model.uid))
                 .all(&self.active_read)
-                .await{
+                .await
+            {
                 Ok(key) => key,
-                Err(_) => return Err(anyhow::anyhow!("ssh key not found"))
+                Err(_) => return Err(anyhow::anyhow!("ssh key not found")),
             }
         };
         for key in keys {
