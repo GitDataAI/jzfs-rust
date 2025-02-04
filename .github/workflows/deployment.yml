@@ -16,7 +16,7 @@ jobs:
               uses: actions/checkout@v3
 
             - name: Deploy
-              uses: WyriHaximus/github-action-helm3@v3
+              uses: WyriHaximus/github-action-helm3@v4
               with:
                   exec: /usr/sbin/helm upgrade gateway --install ./deploy/gitdata --namespace gitdataai --set-string nacos=${{ secrets.NACOS }}  --set-string tag=${{ steps.version.outputs.version }}
                   kubeconfig: ${{ secrets.KUBECONTENT }}
