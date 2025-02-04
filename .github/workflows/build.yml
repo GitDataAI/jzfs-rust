@@ -22,7 +22,7 @@ jobs:
           echo "Base Repository: ${{ github.base_repository }}"
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install latest nightly
         uses: actions-rs/toolchain@v1
